@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>الوصية الرقمية — حياة أفضل</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="sidebar.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+<style>
+.will-card-preview{
+  background:linear-gradient(135deg,#1a1a2e,#16213e,#0f3460);
+  border-radius:20px;padding:28px 30px;color:#fff;font-family:'Amiri',serif;
+  max-width:460px;margin:0 auto 24px;box-shadow:0 20px 60px rgba(0,0,0,.4);
+  position:relative;overflow:hidden
+}
+.will-card-preview::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");}
+.will-header{font-size:.7rem;letter-spacing:3px;opacity:.6;text-transform:uppercase;font-family:'Poppins',sans-serif;margin-bottom:14px}
+.will-name{font-size:1.4rem;font-weight:700;margin-bottom:4px}
+.will-sub{font-size:.85rem;opacity:.8;margin-bottom:16px}
+.will-detail{font-size:.9rem;opacity:.9;line-height:1.8}
+.will-footer{display:flex;justify-content:space-between;margin-top:16px;font-size:.75rem;opacity:.65;font-family:'Poppins',sans-serif}
+.will-seal{position:absolute;top:16px;left:16px;width:40px;height:40px;border-radius:50%;border:2px solid rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;font-size:1.2rem}
+.ayah-box{background:rgba(255,255,255,.07);border-right:3px solid rgba(255,255,255,.3);padding:10px 14px;border-radius:0 8px 8px 0;font-size:.88rem;line-height:1.8;margin-bottom:12px}
+.trigger-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
+.trigger-card{background:#fff;border-radius:12px;padding:14px;text-align:center;cursor:pointer;border:2px solid rgba(46,125,50,.15);transition:.2s}
+.trigger-card:hover,.trigger-card.selected{border-color:#2e7d32;background:rgba(46,125,50,.04)}
+.trigger-card.selected .trigger-check{opacity:1}
+.trigger-icon{font-size:1.6rem;margin-bottom:6px}
+.trigger-check{width:18px;height:18px;border-radius:50%;background:#2e7d32;color:#fff;font-size:.6rem;display:flex;align-items:center;justify-content:center;margin:4px auto 0;opacity:0;transition:.2s}
+.assurance-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px}
+.assurance-item{display:flex;align-items:center;gap:6px;background:#f0fdf4;padding:8px 14px;border-radius:10px;font-size:.82rem;color:#166534}
+.assurance-item i{color:#22c55e}
+</style>
+</head>
+<body>
+<div id="loading"><div class="loader"></div></div>
+
+<div class="main-content">
+  <div class="page-hero-mini" style="background:linear-gradient(135deg,rgba(15,52,96,.92),rgba(5,46,22,.88))">
+    <i class="fas fa-scroll hero-icon" style="filter:drop-shadow(0 0 22px #93c5fd)"></i>
+    <h1>الوصية الرقمية</h1>
+    <p>حدّد صدقة جارية تُنفَّذ بعد وفاتك — ثروتك تبقى تدعو لك بعد رحيلك</p>
+  </div>
+
+  <div style="max-width:860px;margin:0 auto;padding:24px 20px 80px">
+
+    <!-- Assurance -->
+    <div class="assurance-row">
+      <div class="assurance-item"><i class="fas fa-lock"></i> بياناتك محمية تماماً</div>
+      <div class="assurance-item"><i class="fas fa-scale-balanced"></i> تعاون مع الإجراءات القانونية</div>
+      <div class="assurance-item"><i class="fas fa-user-shield"></i> لا تُنفَّذ إلا بعد التحقق</div>
+      <div class="assurance-item"><i class="fas fa-rotate"></i> يمكنك التعديل في أي وقت</div>
+    </div>
+
+    <!-- Ayah -->
+    <div class="glass-card" style="padding:22px;margin-bottom:24px">
+      <div style="text-align:center;font-family:'Amiri',serif;font-size:1.1rem;color:#2e7d32;margin-bottom:8px">
+        ﴿ إِنَّا نَحْنُ نُحْيِي الْمَوْتَىٰ وَنَكْتُبُ مَا قَدَّمُوا وَآثَارَهُمْ ﴾
+      </div>
+      <div style="text-align:center;font-size:.82rem;color:#888">يس: ١٢</div>
+    </div>
+
+    <!-- Live preview card -->
+    <div class="will-card-preview" id="willPreview">
+      <div class="will-header">🕌 حياة أفضل — الوصية الرقمية</div>
+      <div class="will-seal"><i class="fas fa-scroll"></i></div>
+      <div class="will-name" id="wp-name">—</div>
+      <div class="will-sub" id="wp-trigger">تُنفَّذ عند: —</div>
+      <div class="ayah-box">"اللهم اجعله صدقة جارية في ميزان حسناتي"</div>
+      <div class="will-detail" id="wp-detail">
+        المبلغ: — | الفئة: —<br>الملاحظات: —
+      </div>
+      <div class="will-footer">
+        <span id="wp-date">—</span>
+        <span>موثّق رقمياً ✓</span>
+      </div>
+    </div>
+
+    <!-- Form -->
+    <div class="glass-card" style="padding:28px">
+      <h3 style="color:#1e3a5f;margin-bottom:18px"><i class="fas fa-pen-to-square" style="margin-left:8px"></i> تسجيل الوصية</h3>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px">
+        <div class="form-group"><label>الاسم الكامل *</label><input type="text" id="wName" placeholder="كما في البطاقة الوطنية" required oninput="updateWPreview()"></div>
+        <div class="form-group"><label>الرقم القومي (اختياري)</label><input type="text" id="wNID" placeholder="14 رقم" maxlength="14"></div>
+      </div>
+
+      <label style="font-weight:600;color:#333;display:block;margin-bottom:10px">حدث التنفيذ</label>
+      <div class="trigger-cards" id="triggerCards">
+        <div class="trigger-card selected" data-val="death" onclick="selectTrigger(this)">
+          <div class="trigger-icon">🕊️</div>
+          <div style="font-size:.85rem;font-weight:600">بعد الوفاة</div>
+          <div class="trigger-check"><i class="fas fa-check"></i></div>
+        </div>
+        <div class="trigger-card" data-val="incapacity" onclick="selectTrigger(this)">
+          <div class="trigger-icon">🏥</div>
+          <div style="font-size:.85rem;font-weight:600">عند العجز</div>
+          <div class="trigger-check"><i class="fas fa-check"></i></div>
+        </div>
+        <div class="trigger-card" data-val="scheduled" onclick="selectTrigger(this)">
+          <div class="trigger-icon">📅</div>
+          <div style="font-size:.85rem;font-weight:600">موعد محدد</div>
+          <div class="trigger-check"><i class="fas fa-check"></i></div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px">
+        <div class="form-group"><label>المبلغ (ج.م)</label><input type="number" id="wAmount" min="0" placeholder="اختياري" oninput="updateWPreview()"></div>
+        <div class="form-group"><label>نسبة من المدخرات (%)</label><input type="number" id="wPct" min="0" max="100" placeholder="مثال: 10%" oninput="updateWPreview()"></div>
+        <div class="form-group"><label>فئة المستفيدين</label>
+          <select id="wBenef" onchange="updateWPreview()">
+            <option value="orphans">أيتام</option>
+            <option value="elderly">مسنون</option>
+            <option value="education">تعليم</option>
+            <option value="water">حفر آبار</option>
+            <option value="general">عام</option>
+          </select></div>
+      </div>
+
+      <div class="form-group"><label>ملاحظاتك الشخصية</label>
+        <textarea id="wNotes" placeholder="أي توجيهات إضافية أو رسالة لمن يُنفّذ الوصية..." oninput="updateWPreview()"></textarea></div>
+
+      <button onclick="submitWill()" class="submit-btn" style="max-width:240px;background:linear-gradient(135deg,#1e3a5f,#1e40af)">
+        <i class="fas fa-scroll"></i> تسجيل الوصية
+      </button>
+      <div id="willMsg" style="margin-top:12px"></div>
+    </div>
+
+  </div>
+</div>
+
+<script src="script.js"></script>
+<script src="sidebar.js"></script>
+<script>
+let selectedTrigger = 'death';
+const triggerLabels = {death:'بعد الوفاة',incapacity:'عند العجز',scheduled:'موعد محدد'};
+const benefLabels = {orphans:'أيتام',elderly:'مسنون',education:'تعليم',water:'حفر آبار',general:'عام'};
+
+function selectTrigger(el) {
+  document.querySelectorAll('.trigger-card').forEach(t=>t.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedTrigger = el.dataset.val;
+  updateWPreview();
+}
+
+function updateWPreview() {
+  const name    = document.getElementById('wName').value    || '—';
+  const amount  = document.getElementById('wAmount').value;
+  const pct     = document.getElementById('wPct').value;
+  const benef   = document.getElementById('wBenef').value;
+  const notes   = document.getElementById('wNotes').value   || '—';
+  document.getElementById('wp-name').textContent    = name;
+  document.getElementById('wp-trigger').textContent = `تُنفَّذ: ${triggerLabels[selectedTrigger]||'—'}`;
+  document.getElementById('wp-detail').innerHTML =
+    `المبلغ: ${amount ? parseFloat(amount).toLocaleString('ar-EG')+' ج.م' : '—'} ${pct ? `(${pct}% من المدخرات)` : ''}<br>
+     الفئة: ${benefLabels[benef]||'—'}<br>
+     الملاحظات: ${notes}`;
+  document.getElementById('wp-date').textContent = new Date().toLocaleDateString('ar-EG');
+}
+
+async function submitWill() {
+  const name = document.getElementById('wName').value;
+  if (!name) { alert('يرجى إدخال الاسم الكامل'); return; }
+  const body = {
+    full_name:            name,
+    national_id:          document.getElementById('wNID').value,
+    amount:               parseFloat(document.getElementById('wAmount').value)||null,
+    percentage:           parseFloat(document.getElementById('wPct').value)||null,
+    trigger_event:        selectedTrigger,
+    beneficiary_category: document.getElementById('wBenef').value,
+    notes:                document.getElementById('wNotes').value,
+  };
+  const res = await apiRequest('/legacy', 'POST', body);
+  const msg = document.getElementById('willMsg');
+  if (res.message) {
+    msg.innerHTML = `<div class="alert-success"><i class="fas fa-scroll"></i> ${res.message}</div>`;
+  } else {
+    msg.innerHTML = `<div style="color:#dc2626">تأكد من تشغيل الخادم</div>`;
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('loading').style.display = 'none';
+  updateWPreview();
+});
+</script>
+</body>
+</html>

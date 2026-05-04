@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>الذكاء الاصطناعي التنبؤي — حياة أفضل</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="sidebar.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+.alert-card{border-radius:16px;padding:20px;margin-bottom:14px;display:flex;gap:16px;align-items:flex-start;transition:.25s;cursor:pointer}
+.alert-card:hover{transform:translateX(-4px)}
+.alert-card.critical{background:linear-gradient(135deg,rgba(127,29,29,.08),rgba(220,38,38,.06));border-right:5px solid #dc2626}
+.alert-card.high{background:linear-gradient(135deg,rgba(120,53,15,.08),rgba(245,158,11,.06));border-right:5px solid #f59e0b}
+.alert-card.medium{background:linear-gradient(135deg,rgba(49,46,129,.08),rgba(99,102,241,.06));border-right:5px solid #6366f1}
+.alert-card.low{background:linear-gradient(135deg,rgba(5,46,22,.08),rgba(34,197,94,.06));border-right:5px solid #22c55e}
+.alert-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0}
+.alert-icon.critical{background:rgba(220,38,38,.12);color:#dc2626}
+.alert-icon.high{background:rgba(245,158,11,.12);color:#d97706}
+.alert-icon.medium{background:rgba(99,102,241,.12);color:#6366f1}
+.alert-icon.low{background:rgba(34,197,94,.12);color:#16a34a}
+.alert-meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.alert-tag{padding:3px 10px;border-radius:99px;font-size:.7rem;font-weight:600;font-family:Poppins,sans-serif}
+.alert-actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.aa-btn{padding:7px 16px;border-radius:10px;border:none;font-weight:600;cursor:pointer;font-family:Poppins,sans-serif;font-size:.82rem;transition:.2s}
+.aa-donate{background:#2e7d32;color:#fff}
+.aa-donate:hover{background:#1b5e20}
+.aa-subscribe{background:#f3f4f6;color:#555;border:2px solid #e5e7eb}
+.aa-subscribe:hover{border-color:#2e7d32;color:#2e7d32}
+.ai-insight-card{background:linear-gradient(135deg,rgba(99,102,241,.08),rgba(139,92,246,.06));border:1px solid rgba(99,102,241,.2);border-radius:16px;padding:20px;margin-bottom:20px}
+.ai-chip{display:inline-flex;align-items:center;gap:6px;background:rgba(99,102,241,.12);color:#6366f1;padding:4px 12px;border-radius:99px;font-size:.75rem;font-weight:700;font-family:Poppins,sans-serif;margin-bottom:10px}
+.priority-row{display:flex;align-items:center;gap:12px;padding:10px 14px;background:#fff;border-radius:10px;margin-bottom:8px;box-shadow:0 1px 6px rgba(0,0,0,.06);transition:.2s}
+.priority-row:hover{box-shadow:0 4px 14px rgba(0,0,0,.1)}
+.priority-num{width:28px;height:28px;border-radius:50%;background:#6366f1;color:#fff;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;flex-shrink:0}
+.subscribe-form-wrap{background:#fff;border-radius:16px;padding:24px;box-shadow:0 2px 14px rgba(0,0,0,.07);margin-bottom:20px}
+</style>
+</head>
+<body>
+<div id="loading"><div class="loader"></div></div>
+
+<div class="main-content">
+  <div class="page-hero-mini" style="background:linear-gradient(135deg,rgba(49,46,129,.9),rgba(99,102,241,.85))">
+    <i class="fas fa-brain hero-icon" style="filter:drop-shadow(0 0 22px #c4b5fd)"></i>
+    <h1>الذكاء الاصطناعي التنبؤي</h1>
+    <p>تنبيهات مسبقة للأزمات الموسمية — قبل أن تقع، لتكون دائماً خطوة للأمام</p>
+  </div>
+
+  <div style="max-width:960px;margin:0 auto;padding:24px 20px 80px">
+
+    <!-- AI insight -->
+    <div class="ai-insight-card">
+      <div class="ai-chip"><i class="fas fa-microchip"></i> تحليل AI</div>
+      <h3 style="color:#4338ca;margin-bottom:10px">الأولويات المقترحة لك هذا الأسبوع</h3>
+      <p style="font-size:.85rem;color:#666;margin-bottom:14px">بناءً على الموسم، البيانات الجغرافية، وسجل الاحتياجات — رتّب AI الحالات التالية كأعلى أولوية:</p>
+      <div id="priorityList">
+        <div style="text-align:center;padding:20px;color:#999">جاري التحليل...</div>
+      </div>
+    </div>
+
+    <!-- Subscribe to alerts -->
+    <div class="subscribe-form-wrap">
+      <h3 style="color:#6366f1;margin-bottom:4px"><i class="fas fa-bell" style="margin-left:8px"></i> اشترك في تنبيهات الأزمات</h3>
+      <p style="font-size:.83rem;color:#888;margin-bottom:14px">احصل على إشعار فوري حين يتنبأ النظام بأزمة وشيكة في منطقتك</p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <input type="text" id="subPhone" placeholder="رقم الهاتف أو واتساب" style="flex:1;min-width:200px;padding:10px 14px;border-radius:10px;border:2px solid rgba(99,102,241,.25);font-family:Poppins,sans-serif">
+        <input type="text" id="subArea" placeholder="منطقتك (محافظة)" style="flex:1;min-width:160px;padding:10px 14px;border-radius:10px;border:2px solid rgba(99,102,241,.25);font-family:Poppins,sans-serif">
+        <button onclick="subscribe()" style="padding:10px 20px;border:none;border-radius:10px;background:#6366f1;color:#fff;font-weight:700;cursor:pointer;font-family:Poppins,sans-serif">اشترك</button>
+      </div>
+      <div id="subMsg" style="margin-top:8px;font-size:.85rem"></div>
+    </div>
+
+    <!-- Crisis alerts -->
+    <h3 style="color:#1a1a1a;margin-bottom:16px"><i class="fas fa-triangle-exclamation" style="color:#f59e0b;margin-left:8px"></i> التنبيهات النشطة</h3>
+    <div id="alertsList">
+      <div style="text-align:center;padding:40px;color:#999">جاري التحميل...</div>
+    </div>
+
+  </div>
+</div>
+
+<script src="script.js"></script>
+<script src="sidebar.js"></script>
+<script>
+const severityConfig = {
+  critical:{ label:'حرجة', icon:'fas fa-radiation', tagBg:'#fee2e2', tagColor:'#dc2626' },
+  high:    { label:'عالية', icon:'fas fa-triangle-exclamation', tagBg:'#fef3c7', tagColor:'#d97706' },
+  medium:  { label:'متوسطة', icon:'fas fa-circle-info', tagBg:'#e0e7ff', tagColor:'#4338ca' },
+  low:     { label:'منخفضة', icon:'fas fa-leaf', tagBg:'#dcfce7', tagColor:'#16a34a' },
+};
+const typeLabels = {weather:'طقس',epidemic:'وباء',displacement:'تهجير',food:'غذاء',economic:'اقتصادي',other:'أخرى'};
+
+async function loadAlerts() {
+  const data = await apiRequest('/crisis-alerts');
+  const alerts = Array.isArray(data) ? data : [];
+
+  // AI priority
+  const sorted = [...alerts].sort((a,b)=>{
+    const order = {critical:0,high:1,medium:2,low:3};
+    return (order[a.severity]||3) - (order[b.severity]||3);
+  });
+  document.getElementById('priorityList').innerHTML = sorted.slice(0,4).map((a,i) => `
+    <div class="priority-row">
+      <div class="priority-num">${i+1}</div>
+      <div style="flex:1">
+        <div style="font-weight:600;font-size:.9rem">${a.title}</div>
+        <div style="font-size:.78rem;color:#888">${a.area_name||''} — ${typeLabels[a.type]||'أخرى'}</div>
+      </div>
+      <button onclick="donateTo(${a.id})" style="padding:6px 14px;border:none;border-radius:8px;background:#2e7d32;color:#fff;font-size:.78rem;font-weight:700;cursor:pointer;font-family:Poppins,sans-serif">تبرع</button>
+    </div>`).join('') || '<div style="text-align:center;color:#999;padding:16px">لا توجد تنبيهات نشطة</div>';
+
+  if (!alerts.length) {
+    document.getElementById('alertsList').innerHTML = `<div style="text-align:center;padding:60px;color:#16a34a"><i class="fas fa-shield-halved" style="font-size:2.5rem;display:block;margin-bottom:12px"></i> لا توجد أزمات متوقعة حالياً — الحمد لله</div>`;
+    return;
+  }
+
+  document.getElementById('alertsList').innerHTML = alerts.map(a => {
+    const cfg = severityConfig[a.severity] || severityConfig.low;
+    const pct = Math.min(100, a.progress||0);
+    return `
+    <div class="alert-card ${a.severity}">
+      <div class="alert-icon ${a.severity}"><i class="${cfg.icon}"></i></div>
+      <div style="flex:1">
+        <div style="font-weight:700;font-size:.95rem;color:#1a1a1a;margin-bottom:4px">${a.title}</div>
+        <div style="font-size:.83rem;color:#666;margin-bottom:8px">${a.description}</div>
+        <div class="alert-meta">
+          <span class="alert-tag" style="background:${cfg.tagBg};color:${cfg.tagColor}">${cfg.label}</span>
+          <span class="alert-tag" style="background:#f3f4f6;color:#555">${typeLabels[a.type]||'أخرى'}</span>
+          ${a.area_name ? `<span class="alert-tag" style="background:#f0fdf4;color:#16a34a"><i class="fas fa-location-dot"></i> ${a.area_name}</span>` : ''}
+          ${a.needed_amount > 0 ? `<span class="alert-tag" style="background:#fef9c3;color:#854d0e">المطلوب: ${parseFloat(a.needed_amount).toLocaleString('ar-EG')} ج.م</span>` : ''}
+        </div>
+        ${a.needed_amount > 0 ? `
+        <div style="margin-top:10px">
+          <div style="display:flex;justify-content:space-between;font-size:.75rem;color:#888;margin-bottom:3px">
+            <span>تم جمع: ${parseFloat(a.current_amount).toLocaleString('ar-EG')} ج.م</span>
+            <span>${pct}%</span>
+          </div>
+          <div style="height:6px;background:rgba(0,0,0,.08);border-radius:99px;overflow:hidden">
+            <div style="width:${pct}%;height:100%;border-radius:99px;background:#2e7d32;transition:.8s"></div>
+          </div>
+        </div>` : ''}
+        <div class="alert-actions">
+          <button class="aa-btn aa-donate" onclick="donateTo(${a.id})"><i class="fas fa-heart"></i> تبرع الآن</button>
+          <button class="aa-btn aa-subscribe" onclick="shareAlert('${a.title}')"><i class="fas fa-share-nodes"></i> شارك التنبيه</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function donateTo(id) {
+  const amount = parseFloat(prompt('أدخل مبلغ التبرع (ج.م):'));
+  if (!amount||amount<1) return;
+  const res = await apiRequest(`/crisis-alerts/${id}/donate`, 'POST', { amount });
+  if (res.message) { alert(res.message); loadAlerts(); }
+}
+
+function shareAlert(title) {
+  const text = `⚠️ تنبيه مبكر من نظام AI\n${title}\nساعدنا في الاستعداد — منصة حياة أفضل`;
+  navigator.clipboard?.writeText(text).then(()=>alert('تم نسخ التنبيه'));
+}
+
+function subscribe() {
+  const phone = document.getElementById('subPhone').value;
+  const area  = document.getElementById('subArea').value;
+  if (!phone) { document.getElementById('subMsg').textContent = 'يرجى إدخال رقم الهاتف'; return; }
+  document.getElementById('subMsg').innerHTML = `<span style="color:#6366f1">✅ تم تسجيلك — ستصلك تنبيهات الأزمات في ${area||'منطقتك'}</span>`;
+}
+
+// seed demo alerts
+async function seedDemo() {
+  const demos = [
+    { title:'موجة برد شديدة متوقعة — قرى شمال أسيوط', description:'توقعات الأرصاد تشير لهبوط حاد في درجات الحرارة خلال 48 ساعة. نحتاج بطانيات وملابس شتوية لـ 200 أسرة.', area_name:'أسيوط', severity:'critical', type:'weather', needed_amount:18000, current_amount:4000 },
+    { title:'ارتفاع حاد في حالات النزلات المعوية', description:'تسجيل حالات متعددة في مخيم 6 أكتوبر — خطر تفشي وبائي. نحتاج مستلزمات طبية وعلاج فوري.', area_name:'6 أكتوبر', severity:'high', type:'epidemic', needed_amount:9000, current_amount:2100 },
+    { title:'أسر نازحة بعد فيضانات جنوب مصر', description:'تضررت 45 أسرة في نجع حمادي — تحتاج مأوى مؤقتاً وغذاء عاجلاً.', area_name:'قنا', severity:'high', type:'displacement', needed_amount:22000, current_amount:8500 },
+    { title:'شح غذائي موسمي — رمضان القادم', description:'توقعات بارتفاع الأسعار 30٪ — نجهز مخزوناً من المواد التموينية الآن لتوزيعه خلال رمضان.', area_name:'القاهرة الكبرى', severity:'medium', type:'food', needed_amount:50000, current_amount:31000 },
+  ];
+  for (const d of demos) {
+    await apiRequest('/crisis-alerts', 'POST', d).catch(()=>{});
+  }
+  await loadAlerts();
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
+  document.getElementById('loading').style.display = 'none';
+  await loadAlerts();
+  const data = await apiRequest('/crisis-alerts');
+  if (!Array.isArray(data) || !data.length) await seedDemo();
+});
+</script>
+</body>
+</html>

@@ -163,6 +163,19 @@ body { padding-top: 0; }
 }
 .sidebar-donate:hover { color: #a7f3d0 !important; }
 
+/* ── SOS emergency (red pulse) ── */
+.sidebar-sos .sidebar-icon {
+  background: rgba(220,38,38,.15); border-color: rgba(220,38,38,.35);
+  animation: sosPulse 2s ease-in-out infinite;
+}
+@keyframes sosPulse {
+  0%,100% { box-shadow: 0 0 0 0 rgba(220,38,38,.4); }
+  50%      { box-shadow: 0 0 0 6px rgba(220,38,38,0); }
+}
+.sidebar-sos .sidebar-icon i { color: #ef4444; }
+.sidebar-sos:hover .sidebar-icon { background: #dc2626; box-shadow: 0 0 20px rgba(220,38,38,.5); }
+.sidebar-sos:hover .sidebar-icon i { color: #fff; }
+
 /* ── AI Chatbot link (special) ── */
 .sidebar-ai .sidebar-icon {
   background: rgba(99,102,241,.15); border-color: rgba(99,102,241,.3);

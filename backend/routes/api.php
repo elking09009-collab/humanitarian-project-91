@@ -13,6 +13,13 @@ use App\Http\Controllers\Api\SkillDonationController;
 use App\Http\Controllers\Api\CharityFundController;
 use App\Http\Controllers\Api\MicroProjectController;
 use App\Http\Controllers\Api\VolunteerValidationController;
+use App\Http\Controllers\Api\SmartInventoryController;
+use App\Http\Controllers\Api\MicroEndowmentController;
+use App\Http\Controllers\Api\CrisisAlertController;
+use App\Http\Controllers\Api\ImpactWallController;
+use App\Http\Controllers\Api\EmergencyCaseController;
+use App\Http\Controllers\Api\LegacyGivingController;
+use App\Http\Controllers\Api\CsrCompanyController;
 
 Route::middleware('throttle:5,1')->group(function () {
     Route::post('/register', [AuthController::class, 'register']);
@@ -51,6 +58,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/charity-funds/{id}/contribute', [CharityFundController::class, 'contribute']);
     Route::post('/micro-projects/{id}/fund', [MicroProjectController::class, 'fund']);
     Route::post('/volunteer-validations', [VolunteerValidationController::class, 'store']);
+    Route::get('/my-wills', [LegacyGivingController::class, 'myWills']);
+    Route::get('/my-points', function (Request $request) {
+        return response()->json(['points' => $request->user()->loyalty_points ?? 0]);
+    });
 });
 
 // Public comments read
@@ -63,3 +74,36 @@ Route::post('/charity-funds/join', [CharityFundController::class, 'joinByCode'])
 Route::get('/micro-projects', [MicroProjectController::class, 'index']);
 Route::get('/volunteer-validations', [VolunteerValidationController::class, 'index']);
 Route::get('/heatmap', [VolunteerValidationController::class, 'heatmap']);
+
+// ===== Smart Inventory =====
+Route::get('/inventory', [SmartInventoryController::class, 'index']);
+Route::post('/inventory', [SmartInventoryController::class, 'store']);
+Route::post('/inventory/{id}/reserve', [SmartInventoryController::class, 'reserve']);
+
+// ===== Micro Endowments =====
+Route::get('/endowments', [MicroEndowmentController::class, 'index']);
+Route::post('/endowments', [MicroEndowmentController::class, 'store']);
+Route::post('/endowments/{id}/contribute', [MicroEndowmentController::class, 'contribute']);
+Route::get('/loans', [MicroEndowmentController::class, 'loans']);
+Route::post('/loans', [MicroEndowmentController::class, 'applyLoan']);
+
+// ===== Crisis Predictor =====
+Route::get('/crisis-alerts', [CrisisAlertController::class, 'index']);
+Route::post('/crisis-alerts/{id}/donate', [CrisisAlertController::class, 'donate']);
+
+// ===== Impact Wall =====
+Route::get('/stories', [ImpactWallController::class, 'stories']);
+Route::post('/stories/{id}/like', [ImpactWallController::class, 'likeStory']);
+Route::get('/forum', [ImpactWallController::class, 'forumPosts']);
+Route::post('/forum', [ImpactWallController::class, 'createForumPost']);
+
+// ===== Emergency SOS =====
+Route::get('/emergency', [EmergencyCaseController::class, 'index']);
+Route::post('/emergency/{id}/donate', [EmergencyCaseController::class, 'donate']);
+
+// ===== Legacy Giving =====
+Route::post('/legacy', [LegacyGivingController::class, 'store']);
+
+// ===== CSR Companies =====
+Route::get('/csr', [CsrCompanyController::class, 'index']);
+Route::post('/csr/register', [CsrCompanyController::class, 'register']);

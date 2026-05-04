@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>الشركات والمسؤولية المجتمعية — حياة أفضل</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="sidebar.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+.honor-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px;margin-bottom:32px}
+.company-card{background:#fff;border-radius:18px;padding:22px;box-shadow:0 3px 18px rgba(0,0,0,.08);text-align:center;transition:.3s;position:relative;overflow:hidden}
+.company-card::before{content:'';position:absolute;top:0;left:0;right:0;height:5px}
+.company-card.platinum::before{background:linear-gradient(90deg,#e2e8f0,#cbd5e1,#94a3b8)}
+.company-card.gold::before{background:linear-gradient(90deg,#fbbf24,#f59e0b,#d97706)}
+.company-card.silver::before{background:linear-gradient(90deg,#94a3b8,#64748b,#475569)}
+.company-card.bronze::before{background:linear-gradient(90deg,#d97706,#b45309,#92400e)}
+.company-card:hover{transform:translateY(-5px);box-shadow:0 10px 32px rgba(0,0,0,.14)}
+.company-logo{width:64px;height:64px;border-radius:16px;background:linear-gradient(135deg,#f0fdf4,#dcfce7);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:1.8rem}
+.company-name{font-size:1rem;font-weight:800;color:#1a1a1a;margin-bottom:4px}
+.company-sector{font-size:.78rem;color:#888;margin-bottom:12px}
+.badge-display{display:inline-flex;align-items:center;gap:6px;padding:5px 14px;border-radius:99px;font-size:.75rem;font-weight:700;font-family:Poppins,sans-serif;margin-bottom:12px}
+.badge-platinum{background:linear-gradient(135deg,#e2e8f0,#cbd5e1);color:#334155}
+.badge-gold{background:linear-gradient(135deg,#fef3c7,#fbbf24);color:#78350f}
+.badge-silver{background:linear-gradient(135deg,#f1f5f9,#94a3b8);color:#334155}
+.badge-bronze{background:linear-gradient(135deg,#fef3c7,#d97706);color:#451a03}
+.company-total{font-size:1.4rem;font-weight:800;color:#2e7d32;font-family:Poppins,sans-serif}
+.company-total-lbl{font-size:.75rem;color:#888;margin-bottom:10px}
+.matching-badge{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:6px 10px;font-size:.75rem;color:#166534;display:inline-block}
+.csr-how{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:28px}
+.how-step{background:#fff;border-radius:14px;padding:18px;text-align:center;box-shadow:0 2px 10px rgba(0,0,0,.06)}
+.how-num{width:36px;height:36px;border-radius:50%;background:#2e7d32;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-family:Poppins,sans-serif;margin:0 auto 10px}
+.seal-preview{background:linear-gradient(135deg,#1b4332,#2e7d32);border-radius:16px;padding:20px;text-align:center;color:#fff;margin:0 auto;max-width:300px}
+.seal-ring{width:100px;height:100px;border-radius:50%;border:4px solid rgba(255,255,255,.4);display:flex;align-items:center;justify-content:center;margin:0 auto 10px;font-size:2.5rem}
+.stats-row{display:flex;gap:12px;justify-content:center;margin-bottom:28px;flex-wrap:wrap}
+.sr-card{background:#fff;border-radius:12px;padding:14px 20px;text-align:center;box-shadow:0 2px 10px rgba(0,0,0,.07);min-width:120px}
+.sr-num{font-size:1.5rem;font-weight:800;color:#2e7d32;font-family:Poppins,sans-serif}
+.sr-lbl{font-size:.75rem;color:#888}
+</style>
+</head>
+<body>
+<div id="loading"><div class="loader"></div></div>
+
+<div class="main-content">
+  <div class="page-hero-mini" style="background:linear-gradient(135deg,rgba(5,46,22,.9),rgba(30,64,175,.85))">
+    <i class="fas fa-building hero-icon"></i>
+    <h1>الشركات والمسؤولية المجتمعية</h1>
+    <p>شراكة الأعمال والمجتمع — وسام شرف رقمي لكل شركة تُغيّر حياة الناس</p>
+  </div>
+
+  <div style="max-width:1000px;margin:0 auto;padding:24px 20px 80px">
+
+    <!-- Stats -->
+    <div class="stats-row" id="csrStats">
+      <div class="sr-card"><div class="sr-num" id="csrCount">…</div><div class="sr-lbl">شركة شريكة</div></div>
+      <div class="sr-card"><div class="sr-num" id="csrTotal">…</div><div class="sr-lbl">ج.م مجموع التبرعات</div></div>
+      <div class="sr-card"><div class="sr-num" id="csrMatch">…</div><div class="sr-lbl">مضاعفة الدعم</div></div>
+    </div>
+
+    <!-- How it works -->
+    <h3 style="color:#1a1a1a;margin-bottom:14px"><i class="fas fa-circle-question" style="color:#2e7d32;margin-left:8px"></i> كيف تعمل الشراكة؟</h3>
+    <div class="csr-how">
+      <div class="how-step"><div class="how-num">١</div><h4 style="font-size:.88rem;margin-bottom:6px">سجّل شركتك</h4><p style="font-size:.78rem;color:#888;margin:0">أرسل بيانات الشركة ونسبة المضاعفة</p></div>
+      <div class="how-step"><div class="how-num">٢</div><h4 style="font-size:.88rem;margin-bottom:6px">خصص ميزانية CSR</h4><p style="font-size:.78rem;color:#888;margin:0">اختر مجالات الدعم وحدد نسبة المضاعفة</p></div>
+      <div class="how-step"><div class="how-num">٣</div><h4 style="font-size:.88rem;margin-bottom:6px">احصل على الوسام</h4><p style="font-size:.78rc;color:#888;margin:0">وسام رقمي يمكنك عرضه في موقعك وتقاريرك</p></div>
+    </div>
+
+    <!-- Matching gift explanation -->
+    <div class="glass-card" style="padding:22px;margin-bottom:28px;background:rgba(255,255,255,.85)">
+      <div style="display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap">
+        <div style="flex:1;min-width:200px">
+          <h3 style="color:#2e7d32;margin-bottom:6px"><i class="fas fa-infinity" style="margin-left:8px"></i> مضاعفة التبرع — Matching Gifts</h3>
+          <p style="font-size:.85rem;color:#666;margin:0">مقابل كل جنيه يتبرع به موظفو شركتك، تتبرع الشركة بجنيه إضافي. يُضاعف الأثر ويُشجع الموظفين على المشاركة.</p>
+        </div>
+        <div class="seal-preview">
+          <div class="seal-ring"><i class="fas fa-medal"></i></div>
+          <div style="font-size:.9rem;font-weight:700">وسام الشريك الذهبي</div>
+          <div style="font-size:.75rem;opacity:.8;margin-top:4px">حياة أفضل ✓</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Companies Honor Board -->
+    <h3 style="color:#1a1a1a;margin-bottom:16px"><i class="fas fa-trophy" style="color:#f59e0b;margin-left:8px"></i> لوحة شرف الشركات</h3>
+    <div id="honorGrid" class="honor-grid">
+      <div style="grid-column:1/-1;text-align:center;padding:40px;color:#999">جاري التحميل...</div>
+    </div>
+
+    <!-- Register company -->
+    <div class="glass-card" style="padding:28px">
+      <h3 style="color:#2e7d32;margin-bottom:18px"><i class="fas fa-handshake" style="margin-left:8px"></i> سجّل شركتك كشريك</h3>
+      <form id="csrForm">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+          <div class="form-group"><label>اسم الشركة *</label><input type="text" id="cName" required></div>
+          <div class="form-group"><label>قطاع الشركة</label><input type="text" id="cSector" placeholder="تقنية / بنوك / تجزئة..."></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+          <div class="form-group"><label>البريد الإلكتروني *</label><input type="email" id="cEmail" required></div>
+          <div class="form-group"><label>الهاتف</label><input type="tel" id="cPhone" placeholder="01xxxxxxxxx"></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+          <div class="form-group"><label>الموقع الإلكتروني</label><input type="url" id="cWebsite" placeholder="https://..."></div>
+          <div class="form-group"><label>نسبة المضاعفة (×)</label>
+            <select id="cMatch">
+              <option value="0.5">×0.5 — مضاعفة نصفية</option>
+              <option value="1" selected>×1 — مضاعفة كاملة</option>
+              <option value="1.5">×1.5</option>
+              <option value="2">×2 — ضعفان</option>
+              <option value="3">×3 — ثلاثة أضعاف</option>
+            </select></div>
+        </div>
+        <div class="form-group"><label>نبذة عن برنامج المسؤولية المجتمعية</label><textarea id="cDesc" placeholder="ما هي مجالات دعمكم المفضلة؟"></textarea></div>
+        <button type="submit" class="submit-btn" style="max-width:240px"><i class="fas fa-building"></i> تقديم طلب الشراكة</button>
+      </form>
+      <div id="csrMsg"></div>
+    </div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+<script src="sidebar.js"></script>
+<script>
+const badgeConfig = {
+  platinum:{ label:'بلاتيني', emoji:'💎', min:500000 },
+  gold:    { label:'ذهبي', emoji:'🥇', min:100000 },
+  silver:  { label:'فضي', emoji:'🥈', min:25000 },
+  bronze:  { label:'برونزي', emoji:'🥉', min:0 },
+};
+
+function determineBadge(total) {
+  if (total >= 500000) return 'platinum';
+  if (total >= 100000) return 'gold';
+  if (total >= 25000)  return 'silver';
+  return 'bronze';
+}
+
+async function loadCompanies() {
+  const data = await apiRequest('/csr');
+  const companies = Array.isArray(data) ? data : [];
+
+  document.getElementById('csrCount').textContent = companies.length;
+  const totalD = companies.reduce((s,c)=>s+parseFloat(c.total_donated||0),0);
+  document.getElementById('csrTotal').textContent = totalD.toLocaleString('ar-EG');
+  const avgMatch = companies.length ? (companies.reduce((s,c)=>s+parseFloat(c.matching_ratio||1),0)/companies.length).toFixed(1) : '–';
+  document.getElementById('csrMatch').textContent = '×' + avgMatch;
+
+  if (!companies.length) {
+    document.getElementById('honorGrid').innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px;color:#999"><i class="fas fa-building" style="font-size:2.5rem;display:block;margin-bottom:12px;color:#2e7d32"></i> لا توجد شركات شريكة بعد — كن أول من يشارك</div>`;
+    return;
+  }
+
+  document.getElementById('honorGrid').innerHTML = companies.map(c => {
+    const badge = c.badge_level || determineBadge(c.total_donated);
+    const cfg = badgeConfig[badge] || badgeConfig.bronze;
+    return `
+    <div class="company-card ${badge}">
+      <div class="company-logo">${c.logo_url ? `<img src="${c.logo_url}" alt="${c.company_name}" style="width:50px;height:50px;border-radius:10px;object-fit:cover">` : '🏢'}</div>
+      <div class="company-name">${c.company_name}</div>
+      <div class="company-sector">${c.sector||'شريك مجتمعي'}</div>
+      <div class="badge-display badge-${badge}">${cfg.emoji} وسام ${cfg.label}</div>
+      <div class="company-total">${parseFloat(c.total_donated||0).toLocaleString('ar-EG')} ج.م</div>
+      <div class="company-total-lbl">إجمالي التبرعات</div>
+      <div class="matching-badge"><i class="fas fa-infinity" style="margin-left:4px"></i> مضاعفة × ${c.matching_ratio||1}</div>
+    </div>`;
+  }).join('');
+}
+
+document.getElementById('csrForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const res = await apiRequest('/csr/register', 'POST', {
+    company_name:   document.getElementById('cName').value,
+    sector:         document.getElementById('cSector').value,
+    contact_email:  document.getElementById('cEmail').value,
+    contact_phone:  document.getElementById('cPhone').value,
+    website:        document.getElementById('cWebsite').value,
+    matching_ratio: parseFloat(document.getElementById('cMatch').value),
+    description:    document.getElementById('cDesc').value,
+  });
+  const msg = document.getElementById('csrMsg');
+  if (res.message) {
+    msg.innerHTML = `<div class="alert-success" style="margin-top:12px"><i class="fas fa-check-circle"></i> ${res.message}</div>`;
+    this.reset(); setTimeout(loadCompanies, 1500);
+  }
+});
+
+document.addEventListener('DOMContentLoaded', async () => {
+  document.getElementById('loading').style.display = 'none';
+  await loadCompanies();
+});
+</script>
+</body>
+</html>

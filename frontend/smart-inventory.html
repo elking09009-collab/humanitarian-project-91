@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>بنك الأصول العينية — حياة أفضل</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="sidebar.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+.type-tabs{display:flex;gap:8px;margin-bottom:24px;flex-wrap:wrap}
+.type-tab{padding:9px 20px;border-radius:99px;border:2px solid rgba(46,125,50,.25);background:rgba(255,255,255,.8);color:#2e7d32;font-weight:600;cursor:pointer;font-family:Poppins,sans-serif;font-size:.85rem;transition:.2s}
+.type-tab:hover,.type-tab.active{background:#2e7d32;color:#fff;border-color:#2e7d32}
+.inv-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-bottom:28px}
+.inv-card{background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.08);transition:.25s;border-top:4px solid #2e7d32}
+.inv-card.medicine{border-top-color:#0ea5e9}
+.inv-card.equipment{border-top-color:#8b5cf6}
+.inv-card.food{border-top-color:#f59e0b}
+.inv-card:hover{transform:translateY(-3px);box-shadow:0 6px 24px rgba(0,0,0,.12)}
+.inv-header{padding:14px 16px 0;display:flex;justify-content:space-between;align-items:flex-start}
+.inv-badge{padding:4px 10px;border-radius:99px;font-size:.7rem;font-weight:700;font-family:Poppins,sans-serif}
+.badge-medicine{background:#e0f2fe;color:#0284c7}
+.badge-equipment{background:#ede9fe;color:#7c3aed}
+.badge-food{background:#fef3c7;color:#d97706}
+.inv-title{font-size:.95rem;font-weight:700;color:#1a1a1a;padding:10px 16px 4px}
+.inv-meta{padding:0 16px 12px;font-size:.8rem;color:#888;display:flex;gap:12px;flex-wrap:wrap}
+.inv-meta span i{margin-left:3px;color:#2e7d32}
+.inv-actions{padding:12px 16px;display:flex;gap:8px;border-top:1px solid #f3f4f6}
+.inv-btn{flex:1;padding:8px;border:none;border-radius:8px;font-weight:600;cursor:pointer;font-family:Poppins,sans-serif;font-size:.82rem;transition:.2s}
+.inv-btn-primary{background:linear-gradient(135deg,#2e7d32,#4ade80);color:#fff}
+.inv-btn-primary:hover{box-shadow:0 4px 14px rgba(46,125,50,.3)}
+.inv-btn-secondary{background:#f3f4f6;color:#555}
+.status-available{color:#16a34a;font-weight:600}
+.status-reserved{color:#d97706;font-weight:600}
+.status-delivered{color:#6b7280;font-weight:600}
+.feature-banner{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:28px}
+.feat-card{background:#fff;border-radius:14px;padding:20px;text-align:center;box-shadow:0 2px 12px rgba(0,0,0,.06)}
+.feat-icon{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 10px;font-size:1.4rem}
+.feat-icon.blue{background:#e0f2fe;color:#0284c7}
+.feat-icon.purple{background:#ede9fe;color:#7c3aed}
+.feat-icon.amber{background:#fef3c7;color:#d97706}
+</style>
+</head>
+<body>
+<div id="loading"><div class="loader"></div></div>
+
+<div class="main-content">
+  <div class="page-hero-mini" style="background:linear-gradient(135deg,rgba(3,105,161,.9),rgba(46,125,50,.88))">
+    <i class="fas fa-boxes-stacked hero-icon"></i>
+    <h1>بنك الأصول العينية</h1>
+    <p>فائض الدواء، الأجهزة التعويضية، بقايا الطعام — ربط من يملك الفائض بمن يحتاج</p>
+  </div>
+
+  <div style="max-width:1000px;margin:0 auto;padding:24px 20px 80px">
+    <!-- Feature explanations -->
+    <div class="feature-banner">
+      <div class="feat-card">
+        <div class="feat-icon blue"><i class="fas fa-pills"></i></div>
+        <h4 style="font-size:.9rem;margin-bottom:6px">فائض الدواء</h4>
+        <p style="font-size:.78rem;color:#888">صيدلي متطوع يراجع الصلاحية ويربطك بمريض محتاج</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon purple"><i class="fas fa-wheelchair"></i></div>
+        <h4 style="font-size:.9rem;margin-bottom:6px">الأجهزة التعويضية</h4>
+        <p style="font-size:.78rem;color:#888">كرسي متحرك، سرير مستشفى، جهاز أكسجين لم تعد تحتاجه</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon amber"><i class="fas fa-utensils"></i></div>
+        <h4 style="font-size:.9rem;margin-bottom:6px">إنقاذ الطعام</h4>
+        <p style="font-size:.78rem;color:#888">فائض المطاعم والفنادق يصل للجمعيات في نفس اليوم</p>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="type-tabs" id="typeTabs">
+      <button class="type-tab active" onclick="filterType('all',this)">الكل</button>
+      <button class="type-tab" onclick="filterType('medicine',this)"><i class="fas fa-pills" style="margin-left:5px"></i> أدوية</button>
+      <button class="type-tab" onclick="filterType('equipment',this)"><i class="fas fa-wheelchair" style="margin-left:5px"></i> أجهزة</button>
+      <button class="type-tab" onclick="filterType('food',this)"><i class="fas fa-utensils" style="margin-left:5px"></i> طعام</button>
+    </div>
+
+    <div id="invGrid" class="inv-grid">
+      <div style="grid-column:1/-1;text-align:center;padding:40px;color:#999">جاري التحميل...</div>
+    </div>
+
+    <!-- Donate item form -->
+    <div class="glass-card" style="padding:28px">
+      <h3 style="color:#2e7d32;margin-bottom:18px"><i class="fas fa-plus-circle" style="margin-left:8px"></i> أضف عنصراً للبنك</h3>
+      <form id="invForm">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+          <div class="form-group"><label>نوع العنصر *</label>
+            <select id="invType" required>
+              <option value="medicine">دواء</option>
+              <option value="equipment">جهاز تعويضي</option>
+              <option value="food">طعام</option>
+            </select></div>
+          <div class="form-group"><label>اسم العنصر *</label><input type="text" id="invTitle" placeholder="مثال: كرسي متحرك بحالة جيدة" required></div>
+        </div>
+        <div class="form-group"><label>الوصف</label><textarea id="invDesc" placeholder="حالة العنصر، أي ملاحظات..."></textarea></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px">
+          <div class="form-group"><label>الكمية</label><input type="number" id="invQty" min="1" value="1"></div>
+          <div class="form-group"><label>تاريخ الصلاحية</label><input type="date" id="invExpiry"></div>
+          <div class="form-group"><label>رقم التواصل</label><input type="tel" id="invContact" placeholder="01xxxxxxxxx"></div>
+        </div>
+        <button type="submit" class="submit-btn" style="max-width:200px"><i class="fas fa-box"></i> أضف للبنك</button>
+      </form>
+      <div id="invMsg"></div>
+    </div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+<script src="sidebar.js"></script>
+<script>
+let allItems = [];
+const typeLabels = {medicine:'دواء',equipment:'جهاز',food:'طعام'};
+const statusLabels = {available:'متاح',reserved:'محجوز',delivered:'تم التسليم'};
+
+function filterType(type, btn) {
+  document.querySelectorAll('.type-tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  const filtered = type === 'all' ? allItems : allItems.filter(i=>i.type===type);
+  renderItems(filtered);
+}
+
+function renderItems(items) {
+  if (!items.length) {
+    document.getElementById('invGrid').innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px;color:#999"><i class="fas fa-box-open" style="font-size:2.5rem;display:block;margin-bottom:12px"></i> لا توجد عناصر في هذه الفئة حالياً</div>`;
+    return;
+  }
+  document.getElementById('invGrid').innerHTML = items.map(item => `
+    <div class="inv-card ${item.type}">
+      <div class="inv-header">
+        <span class="inv-badge badge-${item.type}">${typeLabels[item.type]||item.type}</span>
+        <span class="status-${item.status}" style="font-size:.78rem">${statusLabels[item.status]||item.status}</span>
+      </div>
+      <div class="inv-title">${item.title}</div>
+      <div class="inv-meta">
+        <span><i class="fas fa-hashtag"></i> الكمية: ${item.quantity}</span>
+        ${item.expiry_date ? `<span><i class="fas fa-calendar"></i> ${item.expiry_date}</span>` : ''}
+        ${item.contact_info ? `<span><i class="fas fa-phone"></i> ${item.contact_info}</span>` : ''}
+      </div>
+      ${item.description ? `<div style="padding:0 16px 10px;font-size:.82rem;color:#666">${item.description}</div>` : ''}
+      <div class="inv-actions">
+        <button class="inv-btn inv-btn-primary" onclick="reserveItem(${item.id},this)" ${item.status!=='available'?'disabled':''}>
+          ${item.status==='available' ? '<i class="fas fa-hand-holding"></i> احجز الآن' : '✅ '+statusLabels[item.status]}
+        </button>
+        <button class="inv-btn inv-btn-secondary" onclick="shareItem('${item.title}','${item.contact_info||''}')"><i class="fas fa-share-nodes"></i></button>
+      </div>
+    </div>`).join('');
+}
+
+async function reserveItem(id, btn) {
+  btn.disabled = true; btn.textContent = 'جاري الحجز...';
+  const res = await apiRequest(`/inventory/${id}/reserve`, 'POST', {});
+  if (res.message) {
+    btn.textContent = '✅ تم الحجز';
+    setTimeout(loadItems, 1500);
+  } else {
+    btn.textContent = 'غير متاح';
+  }
+}
+
+function shareItem(title, contact) {
+  const text = `📦 عنصر متاح في بنك الأصول العينية\n${title}\n${contact ? 'للتواصل: '+contact : ''}\nمنصة حياة أفضل`;
+  navigator.clipboard?.writeText(text).then(()=>alert('تم نسخ التفاصيل'));
+}
+
+async function loadItems() {
+  const data = await apiRequest('/inventory');
+  allItems = data?.data || (Array.isArray(data) ? data : []);
+  renderItems(allItems);
+}
+
+document.getElementById('invForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const body = {
+    type: document.getElementById('invType').value,
+    title: document.getElementById('invTitle').value,
+    description: document.getElementById('invDesc').value,
+    quantity: parseInt(document.getElementById('invQty').value)||1,
+    expiry_date: document.getElementById('invExpiry').value||null,
+    contact_info: document.getElementById('invContact').value,
+  };
+  const res = await apiRequest('/inventory', 'POST', body);
+  const msg = document.getElementById('invMsg');
+  if (res.message) {
+    msg.innerHTML = `<div class="alert-success" style="margin-top:12px"><i class="fas fa-check-circle"></i> ${res.message}</div>`;
+    this.reset();
+    setTimeout(loadItems, 1200);
+  } else {
+    msg.innerHTML = `<div style="color:#dc2626;margin-top:10px">تأكد من تشغيل الخادم</div>`;
+  }
+});
+
+document.addEventListener('DOMContentLoaded', async () => {
+  document.getElementById('loading').style.display = 'none';
+  await loadItems();
+});
+</script>
+</body>
+</html>
