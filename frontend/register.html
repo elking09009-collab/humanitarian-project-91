@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>إنشاء حساب</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body class="form-page">
+
+<div class="form-container">
+
+<h2>إنشاء حساب جديد</h2>
+
+<form id="registerForm">
+
+<input type="text" id="reg-name" placeholder="الاسم الكامل" required>
+<input type="email" id="reg-email" placeholder="البريد الإلكتروني" required>
+<input type="tel" id="reg-phone" placeholder="رقم الهاتف">
+
+<select id="reg-role" required>
+  <option value="">اختر نوع الحساب</option>
+  <option value="volunteer">متطوع</option>
+  <option value="organization">منظمة</option>
+</select>
+
+<input type="password" id="reg-password" placeholder="كلمة المرور (6 أحرف على الأقل)" required minlength="6">
+
+<button type="submit">إنشاء حساب</button>
+
+<div id="reg-error" style="color:red;margin-top:8px;display:none;"></div>
+<p style="margin-top:10px;color:#555;">
+  بعد إنشاء الحساب سيتم إرسال طلبك إلى الأدمن للمراجعة داخل نظام HTR قبل تفعيل الدخول.
+</p>
+
+</form>
+
+<p style="text-align:center;margin-top:16px;">
+  لديك حساب؟ <a href="login.html">سجل دخولك</a>
+</p>
+
+<p style="text-align:center;margin-top:8px;">
+  <a href="request-status.html">تابع حالة طلبك</a>
+</p>
+
+<a href="index.html" class="back-btn">رجوع للرئيسية</a>
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

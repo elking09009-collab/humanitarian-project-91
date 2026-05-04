@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>خدماتنا:</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+  #areas-map { height: 450px; width: 100%; border-radius: 12px; margin-top: 20px; box-shadow: 0 4px 20px rgba(0,0,0,.15); }
+  .map-section { padding: 40px 20px; max-width: 1100px; margin: 0 auto; }
+  .map-section h2 { font-size: 1.6rem; color: #d97706; margin-bottom: 10px; text-align: center; }
+  .map-legend { display: flex; gap: 20px; justify-content: center; margin: 12px 0; font-size: 0.9rem; }
+  .map-legend span { display: flex; align-items: center; gap: 6px; }
+  .dot { display: inline-block; width: 14px; height: 14px; border-radius: 50%; }
+</style>
+</head>
+<body>
+
+<header class="navbar">
+<div class="logo">FOR A BETTER LIFE </div>
+<nav>
+<a href="index.html">الرئيسية:</a>
+<a href="services.html">خدماتنا:</a>
+<a href="about-us.html">من نحن:</a>
+<a href="contact-us.html">اتصل بنا:</a>
+</nav>
+</header>
+
+<section class="page-hero">
+
+<img src="images/services-page.jpg">
+
+<div class="page-content">
+<h1><i class="fa-solid fa-hand-holding-heart"></i> خدماتنا</h1>
+<p>
+نوفر خدمات توزيع المساعدات الغذائية والطبية،
+وندعم الأسر المتضررة، ونعمل على إعادة تأهيل 
+المناطق الأكثر احتياجًا. نحرص على السرعة،
+الشفافية، والاستدامة في كل خطوة.
+</p>
+</div>
+
+</section>
+
+<footer class="footer">
+© 2026 معًا لحياة أفضل - جميع الحقوق محفوظة
+</footer>
+
+<section class="map-section">
+  <h2><i class="fa-solid fa-map-location-dot"></i> خريطة المناطق المستهدفة</h2>
+  <p style="text-align:center;color:#6b7280;margin-bottom:8px">اضغط على أي منطقة لعرض تفاصيل الاحتياجات</p>
+  <div class="map-legend">
+    <span><span class="dot" style="background:#ef4444"></span> أولوية عالية</span>
+    <span><span class="dot" style="background:#f59e0b"></span> أولوية متوسطة</span>
+    <span><span class="dot" style="background:#22c55e"></span> أولوية منخفضة</span>
+  </div>
+  <div id="areas-map"></div>
+</section>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="script.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', async function() {
+  const map = L.map('areas-map').setView([23.8859, 45.0792], 5);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+  }).addTo(map);
+
+  try {
+    const res = await fetch(API_BASE_URL + '/areas');
+    const areas = await res.json();
+    areas.forEach(area => {
+      const lat = area.latitude || 23.8859;
+      const lng = area.longitude || 45.0792;
+      const color = area.priority_level === 'high' ? '#ef4444' :
+                    area.priority_level === 'medium' ? '#f59e0b' : '#22c55e';
+      const marker = L.circleMarker([lat, lng], {
+        radius: 12, fillColor: color, color: '#fff',
+        weight: 2, opacity: 1, fillOpacity: 0.85
+      }).addTo(map);
+      marker.bindPopup(
+        `<div dir="rtl"><strong>${area.name}</strong><br>الحالة: ${area.status || '-'}<br>الأولوية: ${area.priority_level || '-'}</div>`
+      );
+      marker.bindTooltip(area.name, { direction: 'top' });
+    });
+  } catch(e) {
+    document.getElementById('areas-map').innerHTML = '<p style="padding:20px;text-align:center;color:#9ca3af">تعذر تحميل بيانات الخريطة</p>';
+  }
+});
+</script>

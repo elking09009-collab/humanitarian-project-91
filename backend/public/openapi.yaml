@@ -1,0 +1,72 @@
+openapi: 3.0.3
+info:
+  title: HTR API
+  version: 1.0.0
+  description: API for humanitarian tracking and account review workflow.
+servers:
+  - url: http://127.0.0.1:8000/api
+paths:
+  /register:
+    post:
+      summary: Submit registration request
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, email, password, role]
+              properties:
+                name: { type: string }
+                email: { type: string, format: email }
+                password: { type: string, minLength: 6 }
+                phone: { type: string }
+                role:
+                  type: string
+                  enum: [volunteer, organization]
+      responses:
+        '201':
+          description: Registration submitted for admin review
+  /login:
+    post:
+      summary: Login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email: { type: string, format: email }
+                password: { type: string }
+      responses:
+        '200':
+          description: Login success
+  /registration-status:
+    post:
+      summary: Check registration status by email
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email]
+              properties:
+                email: { type: string, format: email }
+      responses:
+        '200':
+          description: Current registration status
+  /areas:
+    get:
+      summary: List areas
+      responses:
+        '200':
+          description: Areas list
+  /needs:
+    get:
+      summary: List needs
+      responses:
+        '200':
+          description: Needs list

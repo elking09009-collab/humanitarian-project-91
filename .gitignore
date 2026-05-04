@@ -1,0 +1,36 @@
+# Environment files (NEVER commit)
+backend/.env
+backend/.env.backup
+mobile/.env
+
+# Laravel generated
+backend/vendor/
+backend/storage/logs/*.log
+backend/storage/framework/cache/
+backend/storage/framework/sessions/
+backend/storage/framework/views/
+backend/bootstrap/cache/*.php
+backend/database/database.sqlite
+backend/public/storage
+backend/public/hot
+
+# Node / frontend build
+node_modules/
+mobile/node_modules/
+.expo/
+dist/
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# PHP
+*.log
+*.cache

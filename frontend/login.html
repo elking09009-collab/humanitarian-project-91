@@ -1,0 +1,45 @@
+ <!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>تسجيل الدخول</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body class="form-page">
+
+<div class="form-container">
+
+<h2>تسجيل الدخول</h2>
+
+<form id="loginForm">
+
+<input type="email" id="email" placeholder="البريد الإلكتروني" required>
+<input type="password" id="password" placeholder="كلمة المرور" required>
+
+<button type="submit">دخول</button>
+
+</form>
+
+<div style="margin-top:14px;padding:12px;border:1px solid #ddd;border-radius:10px;background:#fafafa;line-height:1.8;">
+  <strong>بيانات دخول الأدمن:</strong><br>
+  البريد الإلكتروني: <span id="adminEmailText">admin@humanitarian.local</span><br>
+  كلمة المرور: <span id="adminPasswordText">admin1234</span><br>
+  <button id="fillAdminBtn" type="button" style="margin-top:8px;">تعبئة بيانات الأدمن تلقائيًا</button>
+</div>
+
+<p style="text-align:center;margin-top:16px;">
+  ليس لديك حساب؟ <a href="register.html">أنشئ حساباً</a>
+</p>
+
+<p style="text-align:center;margin-top:8px;">
+  <a href="request-status.html">متابعة حالة طلب إنشاء الحساب</a>
+</p>
+
+<a href="index.html" class="back-btn">رجوع للرئيسية</a>
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

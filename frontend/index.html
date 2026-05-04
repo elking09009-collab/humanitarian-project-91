@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>منصة للاحتياجات الانسانية</title>
+
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+
+<div id="loading">
+<div class="loader"></div>
+</div>
+
+<header class="navbar">
+<div class="logo">FOR A BETTER LIFE</div>
+
+<nav>
+<a href="index.html">الرئيسية</a>
+<a href="services.html">خدماتنا</a>
+<a href="about-us.html">من نحن</a>
+<a href="contact-us.html">اتصل بنا</a>
+</nav>
+
+<div class="nav-buttons">
+<a href="donation.html"class="donate-btn"> تبرع الان </a>
+<a href="login.html" class="donate-btn">تسجيل دخول</a>
+<a href="request.html" class="btn-outline">تقديم طلب</a>
+<a href="volunteer.html"class="btn-outline">تطوع الأن</a>
+</div>
+</header>
+
+<section class="hero" id="home">
+<div class="overlay"></div>
+<div class="hero-content">
+<h1>معًا لدعم المناطق المتضررة</h1>
+<p>منصة رقمية لتتبع الاحتياجات الانسانية وتوزيع المساعدات في المناطق المتضررة</p>
+<div class="search-box">
+    <input type="text" id="searchInput" placeholder="ابحث هنا...">
+
+
+    <button class="search-btn" onclick="handleSearch()">
+        <i class="fas fa-search"></i>
+    </button>
+</div>
+
+</button>
+
+</div>
+</div>
+</section>
+
+<section class="cards">
+
+<div class="card">
+<img src="images/children.jpg">
+<p class="card-text">دعم الأطفال هو استثمار في مستقبل أفضل</p>
+</div>
+
+<div class="card">
+<img src="images/elderly.jpg">
+<p class="card-text">رعاية كبار السن واجب إنساني لا يُهمل</p>
+</div>
+
+<div class="card">
+<img src="images/house.jpg">
+<p class="card-text">إعادة إعمار البيوت تمنح الأمل من جديد</p>
+</div>
+
+</section>
+
+<section class="stats">
+
+<div class="stat-box">
+<h2 class="counter" data-target="1200">0</h2>
+<p><i class="fa-solid fa-users"></i> المستفيدين</p>
+</div>
+
+<div class="stat-box">
+<h2 class="counter" data-target="450">0</h2>
+<p><i class="fa-solid fa-clipboard-list"></i> مهمات مقيدة</p>
+</div>
+
+<div class="stat-box">
+<h2 class="counter" data-target="300">0</h2>
+<p><i class="fa-solid fa-check-circle"></i> طلبات مكتملة</p>
+</div>
+
+<div class="stat-box">
+<h2 class="counter" data-target="150">0</h2>
+<p><i class="fa-solid fa-hands-helping"></i> المتطوعين</p>
+</div>
+
+</section>
+
+<section class="vision-section">
+
+<div class="vision-image">
+<img src="images/vision.jpg">
+</div>
+
+<div class="vision-text">
+<h2><i class="fa-solid fa-eye"></i> رؤيتنا:</h2>
+<p>
+نسعى لبناء مجتمع متكافل تُدار فيه المساعدات
+بشفافية وعدالة باستخدام أحدث التقنيات.
+</p>
+</div>
+
+</section>
+
+<section class="map-section" id="contact">
+
+<div class="map-box">
+    <iframe
+src="https://www.google.com/maps/embed?pb=..."
+width="400"
+height="400"
+style="border:0;"
+allowfullscreen=""
+loading="lazy">
+</iframe>
+
+</div>
+
+<div class="map-text">
+
+<h2 class="contact-title">
+<i class="fa-solid fa-location-dot"></i>
+معلومات كيف تجدنا:
+</h2>
+
+<p>
+<i class="fa-solid fa-phone"></i>
+رقم الخدمة: 01205708753
+</p>
+
+<p>
+<i class="fa-solid fa-envelope"></i>
+البريد: project91@project91.org
+</p>
+
+<p>
+<i class="fa-solid fa-users"></i>
+نحن تيم مشروع 91 - معهد الدلتا العالي
+</p>
+
+</div>
+</section>
+<button id="topBtn">↑</button>
+
+<script src="script.js"></script>
+
+<footer class="footer">
+© 2026 معًا لحياة أفضل - جميع الحقوق محفوظة
+</footer>
+
+</body>
+</html>

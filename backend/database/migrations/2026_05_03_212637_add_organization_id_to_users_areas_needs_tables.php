@@ -1,0 +1,44 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::table('users', function (Blueprint $table) {
+            $table->unsignedBigInteger('organization_id')->nullable()->after('role')->index();
+        });
+
+        Schema::table('areas', function (Blueprint $table) {
+            $table->unsignedBigInteger('organization_id')->nullable()->after('id')->index();
+        });
+
+        Schema::table('needs', function (Blueprint $table) {
+            $table->unsignedBigInteger('organization_id')->nullable()->after('id')->index();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::table('needs', function (Blueprint $table) {
+            $table->dropColumn('organization_id');
+        });
+
+        Schema::table('areas', function (Blueprint $table) {
+            $table->dropColumn('organization_id');
+        });
+
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropColumn('organization_id');
+        });
+    }
+};

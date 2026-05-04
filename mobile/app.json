@@ -1,0 +1,9 @@
+{
+  "expo": {
+    "name": "Humanitarian Mobile",
+    "slug": "humanitarian-mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "assetBundlePatterns": ["**/*"]
+  }
+}
