@@ -21,6 +21,7 @@ use App\Http\Controllers\Api\EmergencyCaseController;
 use App\Http\Controllers\Api\LegacyGivingController;
 use App\Http\Controllers\Api\CsrCompanyController;
 use App\Http\Controllers\Api\HumanTwinController;
+use App\Http\Controllers\Api\VolunteerApplicationController;
 
 Route::middleware('throttle:5,1')->group(function () {
     Route::post('/register', [AuthController::class, 'register']);
@@ -74,6 +75,8 @@ Route::get('/charity-funds', [CharityFundController::class, 'index']);
 Route::post('/charity-funds/join', [CharityFundController::class, 'joinByCode']);
 Route::get('/micro-projects', [MicroProjectController::class, 'index']);
 Route::get('/volunteer-validations', [VolunteerValidationController::class, 'index']);
+Route::get('/volunteer-applications/stats', [VolunteerApplicationController::class, 'stats']);
+Route::post('/volunteer-applications', [VolunteerApplicationController::class, 'store']);
 Route::get('/heatmap', [VolunteerValidationController::class, 'heatmap']);
 
 // ===== Smart Inventory =====

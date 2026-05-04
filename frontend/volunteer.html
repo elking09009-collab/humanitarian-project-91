@@ -168,11 +168,11 @@ async function loadStats() {
     const [nRes, pRes, vRes] = await Promise.all([
       fetch(API_BASE_URL + '/needs').then(r => r.ok ? r.json() : null).catch(() => null),
       fetch(API_BASE_URL + '/needs/pending').then(r => r.ok ? r.json() : null).catch(() => null),
-      fetch(API_BASE_URL + '/volunteer-validations').then(r => r.ok ? r.json() : null).catch(() => null),
+      fetch(API_BASE_URL + '/volunteer-applications/stats').then(r => r.ok ? r.json() : null).catch(() => null),
     ]);
     const total   = nRes?.total  ?? nRes?.data?.length  ?? 0;
     const pending = pRes?.total  ?? pRes?.data?.length  ?? 0;
-    const vols    = vRes?.total  ?? vRes?.data?.length  ?? 0;
+    const vols    = vRes?.total ?? 0;
     D.ben  = Math.max(D.ben,  total + 1000);
     D.act  = Math.max(D.act,  pending + 200);
     D.done = Math.max(D.done, (total - pending) + 150);
@@ -201,12 +201,17 @@ async function submitVolunteer() {
   }
   const specs = [...document.querySelectorAll('.spec-grid input:checked')].map(c => c.value).join('، ');
   try {
-    await apiRequest('/volunteer-validations', 'POST', {
+    await apiRequest('/volunteer-applications', 'POST', {
       volunteer_name: name, phone, city,
+      age: document.getElementById('vAge').value ? parseInt(document.getElementById('vAge').value, 10) : null,
       specialties: specs,
       notes: document.getElementById('vNotes').value.trim(),
     });
-  } catch {}
+  } catch (e) {
+    document.getElementById('vErrMsg').innerHTML =
+      `<div style="color:#dc2626;background:#fef2f2;padding:10px;border-radius:8px;font-size:.84rem"><i class="fas fa-exclamation-triangle" style="margin-left:6px"></i>${e.message}</div>`;
+    return;
+  }
   document.getElementById('volSuccess').style.display = 'block';
   document.getElementById('vErrMsg').innerHTML = '';
   const el = document.getElementById('st-vol');
@@ -215,6 +220,7 @@ async function submitVolunteer() {
   document.getElementById('vName').value = '';
   document.getElementById('vPhone').value = '';
   document.getElementById('vCity').value = '';
+  document.getElementById('vAge').value = '';
   document.getElementById('vNotes').value = '';
   document.querySelectorAll('.spec-grid input').forEach(c => c.checked = false);
   document.querySelectorAll('.vol-type-card').forEach(c => c.classList.remove('selected'));
