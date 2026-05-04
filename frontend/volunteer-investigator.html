@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>المتطوع المحقق — حياة أفضل</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="sidebar.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+<div id="loading"><div class="loader"></div></div>
+
+<div class="main-content">
+  <div class="page-hero-mini">
+    <i class="fas fa-user-secret hero-icon"></i>
+    <h1>المتطوع المحقق</h1>
+    <p>زيارة الحالات ميدانياً وتصوير الأوراق الرسمية ورفعها لتوثيق الاحتياج وضمان الشفافية</p>
+  </div>
+
+  <!-- How it works -->
+  <div class="features-grid" style="margin-bottom:0">
+    <div class="glass-card feature-card">
+      <div class="icon-wrap"><i class="fas fa-map-location-dot"></i></div>
+      <h3>١. اختر الحالة</h3>
+      <p>استعرض الاحتياجات المسجّلة في منطقتك واختر الحالة التي تريد توثيقها ميدانياً</p>
+    </div>
+    <div class="glass-card feature-card">
+      <div class="icon-wrap"><i class="fas fa-camera"></i></div>
+      <h3>٢. وثّق وصوّر</h3>
+      <p>زر الأسرة المحتاجة، صوّر الأوراق الرسمية والأدلة، واكتب ملاحظاتك الميدانية</p>
+    </div>
+    <div class="glass-card feature-card">
+      <div class="icon-wrap"><i class="fas fa-shield-check"></i></div>
+      <h3>٣. موافقة الإدارة</h3>
+      <p>يراجع فريق الإدارة التوثيق ويعتمده، فتُعلَّم الحالة "موثّقة" وتصل المساعدة بأمان</p>
+    </div>
+  </div>
+
+  <!-- Approved validations list -->
+  <div style="max-width:900px;margin:0 auto;padding:30px 30px">
+    <h2 style="color:#2e7d32;margin-bottom:20px"><i class="fas fa-badge-check"></i> الحالات الموثّقة</h2>
+    <div id="validationsList" style="display:flex;flex-direction:column;gap:16px">
+      <p style="color:#aaa;text-align:center;padding:40px">جارٍ التحميل...</p>
+    </div>
+  </div>
+
+  <!-- Submit validation form -->
+  <div style="padding:0 30px 60px">
+    <div class="form-glass">
+      <h2><i class="fas fa-upload" style="color:#2e7d32;margin-left:8px"></i> رفع توثيق جديد</h2>
+      <p style="color:#888;font-size:.87rem;margin-bottom:20px">يجب تسجيل الدخول لإرسال التوثيق</p>
+      <div class="form-group">
+        <label>رقم الاحتياج (Need ID)</label>
+        <input type="number" id="valNeedId" placeholder="مثال: 1" min="1">
+      </div>
+      <div class="form-group">
+        <label>الملاحظات الميدانية</label>
+        <textarea id="valNotes" placeholder="اكتب ما شاهدته في الميدان بالتفصيل..."></textarea>
+      </div>
+      <div class="form-group">
+        <label>روابط الصور / المستندات (رابط واحد في كل سطر)</label>
+        <textarea id="valDocs" placeholder="https://example.com/doc1.jpg&#10;https://example.com/doc2.pdf" style="min-height:70px"></textarea>
+      </div>
+      <button class="submit-btn" onclick="submitValidation()">
+        <i class="fas fa-paper-plane"></i> إرسال التوثيق للمراجعة
+      </button>
+      <div class="alert-success" id="valSuccess">✅ تم رفع التوثيق بنجاح وهو قيد المراجعة!</div>
+    </div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+<script src="sidebar.js"></script>
+<script>
+async function loadValidations() {
+  const list = document.getElementById('validationsList');
+  try {
+    const data = await apiRequest('/volunteer-validations');
+    if (!data.length) {
+      list.innerHTML = '<p style="color:#aaa;text-align:center;padding:40px">لا توجد حالات موثّقة بعد</p>';
+      return;
+    }
+    list.innerHTML = data.map(v => `
+      <div class="glass-card validation-card">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px">
+          <div>
+            <strong style="color:#1a1a1a">احتياج #${v.need_id}</strong>
+            <span style="color:#888;font-size:.82rem;margin-right:10px">${v.created_at}</span>
+          </div>
+          <span class="validation-status status-approved"><i class="fas fa-check-circle" style="margin:0 0 0 5px"></i> موثّق ومعتمد</span>
+        </div>
+        <p style="color:#555;margin-top:10px;font-size:.9rem;line-height:1.7">${v.field_notes}</p>
+        ${v.volunteer ? `<p style="color:#2e7d32;font-size:.82rem;margin-top:8px"><i class="fas fa-user"></i> المتطوع: ${v.volunteer}</p>` : ''}
+      </div>`).join('');
+  } catch(e) {
+    list.innerHTML = '<p style="color:#f87171;text-align:center;padding:30px">تعذر التحميل — تأكد من تشغيل السيرفر</p>';
+  }
+}
+
+async function submitValidation() {
+  const token = localStorage.getItem('authToken');
+  if (!token) { alert('يجب تسجيل الدخول أولاً'); window.location='login.html'; return; }
+
+  const needId = document.getElementById('valNeedId').value;
+  const notes  = document.getElementById('valNotes').value.trim();
+  const docsRaw= document.getElementById('valDocs').value.trim();
+  if (!needId || !notes) { alert('يرجى ملء جميع الحقول المطلوبة'); return; }
+
+  const docs = docsRaw ? docsRaw.split('\n').map(s=>s.trim()).filter(Boolean) : [];
+  try {
+    await apiRequest('/volunteer-validations','POST',{
+      need_id: parseInt(needId), field_notes: notes, document_urls: docs
+    }, true);
+    document.getElementById('valSuccess').style.display='block';
+    document.getElementById('valNeedId').value='';
+    document.getElementById('valNotes').value='';
+    document.getElementById('valDocs').value='';
+    loadValidations();
+  } catch(e) { alert('خطأ: ' + e.message); }
+}
+
+document.addEventListener('DOMContentLoaded', loadValidations);
+</script>
+</body>
+</html>

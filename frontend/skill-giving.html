@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>التبرع بالمهارات — حياة أفضل</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="sidebar.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+<div id="loading"><div class="loader"></div></div>
+
+<div class="main-content">
+  <div class="page-hero-mini" style="background:linear-gradient(135deg,rgba(10,30,10,.9),rgba(6,78,59,.85))">
+    <i class="fas fa-screwdriver-wrench hero-icon" style="filter:drop-shadow(0 0 20px #34d399)"></i>
+    <h1>التبرع بالمهارات</h1>
+    <p>الطبيب يتبرع بساعات كشف، المعلم بساعات شرح، المهندس بخبرته — لأن العطاء لا يقتصر على المال</p>
+  </div>
+
+  <!-- Skill types -->
+  <div class="features-grid">
+    <div class="glass-card feature-card">
+      <div class="icon-wrap" style="background:rgba(239,68,68,.1);border-color:rgba(239,68,68,.25)"><i class="fas fa-stethoscope" style="color:#dc2626"></i></div>
+      <h3>رعاية طبية</h3>
+      <p>ساعات كشف مجانية، استشارات طبية، تحاليل، وزيارات منزلية للمرضى المحتاجين</p>
+    </div>
+    <div class="glass-card feature-card">
+      <div class="icon-wrap" style="background:rgba(245,158,11,.1);border-color:rgba(245,158,11,.25)"><i class="fas fa-graduation-cap" style="color:#d97706"></i></div>
+      <h3>التعليم والتدريب</h3>
+      <p>دروس خصوصية، محو أمية، تعليم مهارات للشباب والأطفال في المناطق المحرومة</p>
+    </div>
+    <div class="glass-card feature-card">
+      <div class="icon-wrap" style="background:rgba(99,102,241,.1);border-color:rgba(99,102,241,.25)"><i class="fas fa-laptop-code" style="color:#6366f1"></i></div>
+      <h3>الخدمات التقنية</h3>
+      <p>إصلاح الأجهزة، تصميم المواقع، البرمجة، ودعم الأعمال الصغيرة رقمياً</p>
+    </div>
+    <div class="glass-card feature-card">
+      <div class="icon-wrap" style="background:rgba(20,184,166,.1);border-color:rgba(20,184,166,.25)"><i class="fas fa-scale-balanced" style="color:#0d9488"></i></div>
+      <h3>الخدمات القانونية</h3>
+      <p>استشارات قانونية مجانية، مساعدة في استخراج الوثائق، وتمثيل القضايا الإنسانية</p>
+    </div>
+  </div>
+
+  <!-- Existing skills list -->
+  <div style="max-width:1100px;margin:0 auto;padding:0 30px">
+    <h2 style="color:#2e7d32;margin-bottom:20px"><i class="fas fa-hands-holding"></i> المهارات المتاحة</h2>
+    <div id="skillsList" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px">
+      <p style="color:#aaa;text-align:center;padding:40px;grid-column:1/-1">جارٍ التحميل...</p>
+    </div>
+  </div>
+
+  <!-- Offer skill form -->
+  <div style="padding:40px 30px 60px">
+    <div class="form-glass">
+      <h2><i class="fas fa-plus-circle" style="color:#2e7d32;margin-left:8px"></i> عرض مهارتك</h2>
+      <div class="form-group">
+        <label>نوع المهارة</label>
+        <select id="skillType">
+          <option value="medical">🏥 طبية</option>
+          <option value="teaching">📚 تعليمية</option>
+          <option value="tech">💻 تقنية</option>
+          <option value="legal">⚖️ قانونية</option>
+          <option value="other">✨ أخرى</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>عنوان المهارة</label>
+        <input type="text" id="skillTitle" placeholder="مثال: كشف طبي مجاني للأطفال">
+      </div>
+      <div class="form-group">
+        <label>وصف تفصيلي</label>
+        <textarea id="skillDesc" placeholder="اكتب ما يمكنك تقديمه بالتفصيل..."></textarea>
+      </div>
+      <div class="form-group">
+        <label>عدد الساعات المتاحة أسبوعياً</label>
+        <input type="number" id="skillHours" min="1" max="40" value="2">
+      </div>
+      <div class="form-group">
+        <label>معلومات التواصل (اختياري)</label>
+        <input type="text" id="skillContact" placeholder="رقم هاتف أو بريد إلكتروني">
+      </div>
+      <button class="submit-btn" onclick="offerSkill()">
+        <i class="fas fa-hand-holding-heart"></i> تقديم عرض المهارة
+      </button>
+      <div class="alert-success" id="skillSuccess">✅ تم تسجيل مهارتك! سيتم التواصل معك قريباً.</div>
+    </div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+<script src="sidebar.js"></script>
+<script>
+const skillIcons = {medical:'🏥',teaching:'📚',tech:'💻',legal:'⚖️',other:'✨'};
+const skillNames = {medical:'طبية',teaching:'تعليمية',tech:'تقنية',legal:'قانونية',other:'أخرى'};
+
+async function loadSkills() {
+  const grid = document.getElementById('skillsList');
+  try {
+    const data = await apiRequest('/skill-donations');
+    if (!data.length) {
+      grid.innerHTML = '<p style="color:#aaa;text-align:center;padding:40px;grid-column:1/-1">لا توجد عروض مهارات بعد — كن أول من يتبرع!</p>';
+      return;
+    }
+    grid.innerHTML = data.map(s => `
+      <div class="glass-card" style="padding:22px">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px">
+          <span class="skill-badge ${s.skill_type}">${skillIcons[s.skill_type]||'✨'} ${skillNames[s.skill_type]||s.skill_type}</span>
+          <span style="color:#888;font-size:.78rem">${s.created_at}</span>
+        </div>
+        <h3 style="color:#1a1a1a;margin-bottom:8px;font-size:1rem">${s.skill_title}</h3>
+        <p style="color:#555;font-size:.88rem;line-height:1.6;margin-bottom:12px">${s.description}</p>
+        <div style="display:flex;gap:12px;font-size:.82rem;color:#666">
+          <span><i class="fas fa-clock" style="color:#2e7d32;margin-left:4px"></i> ${s.hours_offered} ساعة/أسبوع</span>
+          <span><i class="fas fa-user" style="color:#2e7d32;margin-left:4px"></i> ${s.donor_name}</span>
+        </div>
+      </div>`).join('');
+  } catch(e) {
+    grid.innerHTML = '<p style="color:#f87171;text-align:center;padding:40px;grid-column:1/-1">تعذر التحميل</p>';
+  }
+}
+
+async function offerSkill() {
+  const token = localStorage.getItem('authToken');
+  if (!token) { alert('يجب تسجيل الدخول أولاً'); window.location='login.html'; return; }
+
+  const payload = {
+    skill_type:    document.getElementById('skillType').value,
+    skill_title:   document.getElementById('skillTitle').value.trim(),
+    description:   document.getElementById('skillDesc').value.trim(),
+    hours_offered: parseInt(document.getElementById('skillHours').value),
+    contact_info:  document.getElementById('skillContact').value.trim(),
+  };
+  if (!payload.skill_title || !payload.description) { alert('يرجى ملء الحقول المطلوبة'); return; }
+  try {
+    await apiRequest('/skill-donations','POST',payload,true);
+    document.getElementById('skillSuccess').style.display='block';
+    document.getElementById('skillTitle').value='';
+    document.getElementById('skillDesc').value='';
+    document.getElementById('skillContact').value='';
+    loadSkills();
+  } catch(e) { alert('خطأ: '+e.message); }
+}
+
+document.addEventListener('DOMContentLoaded', loadSkills);
+</script>
+</body>
+</html>

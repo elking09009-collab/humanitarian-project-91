@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>خريطة الاحتياجات الذكية — حياة أفضل</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="sidebar.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<style>
+.map-wrap { max-width:1100px; margin:0 auto; padding:30px 30px 60px; }
+.map-stats { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:16px; margin-bottom:28px; }
+.map-stat-card {
+  background:rgba(255,255,255,.85); backdrop-filter:blur(12px);
+  border:1px solid rgba(46,125,50,.15); border-radius:16px;
+  padding:18px 20px; text-align:center;
+}
+.map-stat-card .val { font-size:2rem; font-weight:700; color:#2e7d32; line-height:1; }
+.map-stat-card .lbl { font-size:.82rem; color:#666; margin-top:4px; }
+.filter-row { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:18px; align-items:center; }
+.filter-btn {
+  padding:7px 18px; border-radius:99px; border:1.5px solid rgba(46,125,50,.25);
+  background:transparent; cursor:pointer; font-size:.85rem; transition:.2s; color:#444;
+  font-family:'Poppins',sans-serif;
+}
+.filter-btn.active,.filter-btn:hover { background:#2e7d32; color:#fff; border-color:#2e7d32; }
+.info-panel {
+  display:none; background:rgba(255,255,255,.95); backdrop-filter:blur(12px);
+  border:1px solid rgba(46,125,50,.2); border-radius:16px; padding:20px;
+  margin-top:18px; box-shadow:0 4px 24px rgba(0,0,0,.08);
+}
+.info-panel.show { display:block; }
+.info-panel h3 { color:#2e7d32; margin-bottom:10px; }
+.need-bars { display:flex; flex-direction:column; gap:8px; margin-top:12px; }
+.need-bar-row { display:flex; align-items:center; gap:10px; font-size:.88rem; }
+.need-bar-row .lbl { min-width:80px; color:#555; }
+.need-bar-fill { flex:1; background:#e5e7eb; border-radius:99px; height:8px; overflow:hidden; }
+.need-bar-fill div { height:100%; border-radius:99px; background:linear-gradient(90deg,#2e7d32,#4ade80); transition:width .6s; }
+</style>
+</head>
+<body>
+<div id="loading"><div class="loader"></div></div>
+
+<div class="main-content">
+  <div class="page-hero-mini">
+    <i class="fas fa-fire hero-icon"></i>
+    <h1>خريطة الاحتياجات الذكية</h1>
+    <p>خريطة حرارية تفاعلية تُظهر المناطق الأشد احتياجاً — وجّه دعمك للأماكن المنسية</p>
+  </div>
+
+  <div class="map-wrap">
+    <!-- Stats row -->
+    <div class="map-stats" id="mapStats">
+      <div class="map-stat-card"><div class="val" id="statAreas">—</div><div class="lbl">منطقة مرصودة</div></div>
+      <div class="map-stat-card"><div class="val" id="statNeeds">—</div><div class="lbl">احتياج مسجّل</div></div>
+      <div class="map-stat-card"><div class="val" id="statCritical">—</div><div class="lbl">منطقة حرجة</div></div>
+      <div class="map-stat-card"><div class="val" id="statPending">—</div><div class="lbl">احتياج معلّق</div></div>
+    </div>
+
+    <!-- Filters -->
+    <div class="filter-row">
+      <span style="color:#555;font-weight:600;font-size:.9rem">عرض:</span>
+      <button class="filter-btn active" data-filter="all" onclick="filterMap('all',this)">الكل</button>
+      <button class="filter-btn" data-filter="critical" onclick="filterMap('critical',this)">🔴 حرج</button>
+      <button class="filter-btn" data-filter="high"     onclick="filterMap('high',this)">🟠 عالي</button>
+      <button class="filter-btn" data-filter="medium"   onclick="filterMap('medium',this)">🟡 متوسط</button>
+    </div>
+
+    <!-- Map -->
+    <div id="heat-map"></div>
+
+    <!-- Legend -->
+    <div class="heatmap-legend">
+      <div class="legend-item"><span class="legend-dot" style="background:#ef4444;box-shadow:0 0 8px #ef4444"></span> أولوية حرجة</div>
+      <div class="legend-item"><span class="legend-dot" style="background:#f97316;box-shadow:0 0 8px #f97316"></span> أولوية عالية</div>
+      <div class="legend-item"><span class="legend-dot" style="background:#eab308;box-shadow:0 0 8px #eab308"></span> أولوية متوسطة</div>
+      <div class="legend-item"><span class="legend-dot" style="background:#22c55e;box-shadow:0 0 8px #22c55e"></span> أولوية منخفضة</div>
+    </div>
+
+    <!-- Info panel (shows on click) -->
+    <div class="info-panel" id="infoPanel">
+      <h3 id="infoPanelTitle">—</h3>
+      <p id="infoPanelMeta" style="color:#888;font-size:.85rem"></p>
+      <div class="need-bars" id="needBars"></div>
+    </div>
+  </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="script.js"></script>
+<script src="sidebar.js"></script>
+<script>
+let allMarkers = [];
+let heatData   = [];
+
+async function loadHeatmap() {
+  try {
+    const map = L.map('heat-map').setView([27.0, 30.5], 6);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+      attribution:'© OpenStreetMap'
+    }).addTo(map);
+
+    // Load heatmap data
+    const data = await apiRequest('/heatmap');
+    heatData = data;
+
+    // Stats
+    document.getElementById('statAreas').textContent    = data.length;
+    document.getElementById('statNeeds').textContent    = data.reduce((s,d)=>s+d.needs_count,0);
+    document.getElementById('statCritical').textContent = data.filter(d=>d.priority==='critical').length;
+    document.getElementById('statPending').textContent  = data.reduce((s,d)=>s+d.pending_count,0);
+
+    // Markers
+    data.forEach(area => {
+      const color = area.priority==='critical'?'#ef4444':area.priority==='high'?'#f97316':area.priority==='medium'?'#eab308':'#22c55e';
+      const radius = 14 + area.needs_count * 3;
+
+      // Pulse circle
+      const pulseIcon = L.divIcon({
+        className:'',
+        html:`<div style="
+          width:${radius*2}px;height:${radius*2}px;border-radius:50%;
+          background:${color}30;border:3px solid ${color};
+          display:flex;align-items:center;justify-content:center;
+          box-shadow:0 0 0 0 ${color}60;
+          animation:ripple-map 2s infinite;
+          position:relative;
+        ">
+          <div style="width:${radius}px;height:${radius}px;border-radius:50%;background:${color};opacity:.85"></div>
+        </div>`,
+        iconSize:[radius*2,radius*2],
+        iconAnchor:[radius,radius],
+      });
+
+      const m = L.marker([area.lat,area.lng],{icon:pulseIcon}).addTo(map);
+      m._areaData = area;
+
+      m.bindTooltip(`
+        <div dir="rtl" style="font-family:Poppins,sans-serif">
+          <strong>${area.area_name}</strong><br>
+          الاحتياجات: ${area.needs_count} | معلّق: ${area.pending_count}
+        </div>`,{direction:'top'});
+
+      m.on('click',()=>showInfoPanel(area));
+      allMarkers.push({marker:m, priority:area.priority});
+    });
+
+    // Fit bounds
+    if (data.length) {
+      const bounds = L.latLngBounds(data.map(d=>[d.lat,d.lng]));
+      map.fitBounds(bounds,{padding:[40,40]});
+    }
+
+    window._leafletMap = map;
+  } catch(e) {
+    document.getElementById('heat-map').innerHTML='<p style="padding:60px;text-align:center;color:#9ca3af">تعذر تحميل بيانات الخريطة — تأكد من تشغيل السيرفر</p>';
+  }
+}
+
+function filterMap(priority, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  allMarkers.forEach(({marker,priority:p})=>{
+    if (priority==='all'||p===priority) {
+      if (!window._leafletMap.hasLayer(marker)) window._leafletMap.addLayer(marker);
+    } else {
+      window._leafletMap.removeLayer(marker);
+    }
+  });
+}
+
+function showInfoPanel(area) {
+  const panel = document.getElementById('infoPanel');
+  document.getElementById('infoPanelTitle').textContent = area.area_name;
+  document.getElementById('infoPanelMeta').textContent  =
+    `الأولوية: ${area.priority} | الاحتياجات: ${area.needs_count} | معلّق: ${area.pending_count} | الكمية الإجمالية: ${area.total_quantity}`;
+
+  const pct = area.total_quantity > 0 ? Math.min(100,Math.round((area.pending_count/area.needs_count)*100)) : 0;
+  document.getElementById('needBars').innerHTML = `
+    <div class="need-bar-row">
+      <span class="lbl">نسبة المعلّق</span>
+      <div class="need-bar-fill"><div style="width:${pct}%"></div></div>
+      <span>${pct}%</span>
+    </div>
+    <div class="need-bar-row">
+      <span class="lbl">شدة الاحتياج</span>
+      <div class="need-bar-fill"><div style="width:${Math.round(area.intensity*100)}%"></div></div>
+      <span>${Math.round(area.intensity*100)}%</span>
+    </div>`;
+
+  panel.classList.add('show');
+  panel.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+document.addEventListener('DOMContentLoaded', loadHeatmap);
+</script>
+<style>
+@keyframes ripple-map {
+  0%   { box-shadow: 0 0 0 0 rgba(239,68,68,.4); }
+  70%  { box-shadow: 0 0 0 18px rgba(239,68,68,0); }
+  100% { box-shadow: 0 0 0 0 rgba(239,68,68,0); }
+}
+</style>
+</body>
+</html>

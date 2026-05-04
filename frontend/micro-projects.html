@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>مشاريع متناهية الصغر — حياة أفضل</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="sidebar.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+<div id="loading"><div class="loader"></div></div>
+
+<div class="main-content">
+  <div class="page-hero-mini" style="background:linear-gradient(135deg,rgba(10,30,10,.9),rgba(5,46,22,.85))">
+    <i class="fas fa-seedling hero-icon" style="filter:drop-shadow(0 0 20px #86efac)"></i>
+    <h1>مشاريع متناهية الصغر</h1>
+    <p>حوّل المحتاج إلى منتج — بدلاً من الطعام، موّل ماكينة خياطة أو عربة بضائع وغيّر حياته للأبد</p>
+  </div>
+
+  <!-- Impact numbers -->
+  <div style="max-width:900px;margin:0 auto;padding:30px 30px 10px;display:flex;gap:16px;flex-wrap:wrap">
+    <div class="glass-card" style="flex:1;min-width:150px;padding:18px;text-align:center">
+      <div style="font-size:1.8rem;font-weight:700;color:#2e7d32" id="statProjects">—</div>
+      <div style="color:#888;font-size:.82rem">مشروع نشط</div>
+    </div>
+    <div class="glass-card" style="flex:1;min-width:150px;padding:18px;text-align:center">
+      <div style="font-size:1.8rem;font-weight:700;color:#2e7d32" id="statFunded">—</div>
+      <div style="color:#888;font-size:.82rem">مشروع اكتمل تمويله</div>
+    </div>
+    <div class="glass-card" style="flex:1;min-width:150px;padding:18px;text-align:center">
+      <div style="font-size:1.8rem;font-weight:700;color:#2e7d32" id="statRaised">—</div>
+      <div style="color:#888;font-size:.82rem">ج.م جُمعت</div>
+    </div>
+  </div>
+
+  <!-- Projects grid -->
+  <div style="max-width:1100px;margin:0 auto;padding:20px 30px">
+    <h2 style="color:#2e7d32;margin-bottom:20px"><i class="fas fa-rocket"></i> المشاريع المطروحة</h2>
+    <div id="projectsGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px">
+      <p style="color:#aaa;text-align:center;padding:40px;grid-column:1/-1">جارٍ التحميل...</p>
+    </div>
+  </div>
+
+  <!-- Fund modal popup (inline) -->
+  <div id="fundModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9000;align-items:center;justify-content:center">
+    <div style="background:#fff;border-radius:20px;padding:28px;max-width:360px;width:90%;position:relative">
+      <button onclick="closeFundModal()" style="position:absolute;top:12px;left:12px;background:none;border:none;font-size:1.2rem;cursor:pointer;color:#999"><i class="fas fa-xmark" style="margin:0;color:#999"></i></button>
+      <h3 style="color:#2e7d32;margin-bottom:16px" id="modalProjectName">دعم المشروع</h3>
+      <div class="form-group">
+        <label>المبلغ (جنيه مصري)</label>
+        <input type="number" id="modalAmount" min="1" placeholder="100">
+      </div>
+      <button class="submit-btn" onclick="submitFund()">
+        <i class="fas fa-hand-holding-dollar"></i> ادعم هذا المشروع
+      </button>
+      <div class="alert-success" id="fundModalSuccess"></div>
+    </div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+<script src="sidebar.js"></script>
+<script>
+const catIcons = {sewing:'🧵',cart:'🛒',tools:'🔧',agriculture:'🌾',other:'⭐'};
+const catNames = {sewing:'خياطة',cart:'عربة بضائع',tools:'أدوات',agriculture:'زراعة',other:'أخرى'};
+let selectedProjectId = null;
+
+async function loadProjects() {
+  const grid = document.getElementById('projectsGrid');
+  try {
+    const data = await apiRequest('/micro-projects');
+    document.getElementById('statProjects').textContent = data.filter(p=>p.status==='active').length;
+    document.getElementById('statFunded').textContent   = data.filter(p=>p.status==='funded').length;
+    document.getElementById('statRaised').textContent   = data.reduce((s,p)=>s+p.funded_amount,0).toLocaleString('ar-EG');
+
+    if (!data.length) {
+      grid.innerHTML='<p style="color:#aaa;text-align:center;padding:40px;grid-column:1/-1">لا توجد مشاريع بعد</p>';
+      return;
+    }
+    grid.innerHTML = data.map(p=>`
+      <div class="glass-card micro-project-card">
+        <div class="micro-category-icon">${catIcons[p.category]||'⭐'}</div>
+        ${p.image_url?`<img src="${p.image_url}" style="width:100%;border-radius:12px;margin-bottom:12px;max-height:160px;object-fit:cover">` : ''}
+        <h3>${p.name}</h3>
+        <p>${p.description}</p>
+        ${p.area_name?`<p style="color:#2e7d32;font-size:.8rem;margin:6px 0"><i class="fas fa-location-dot" style="margin-left:4px"></i>${p.area_name}</p>`:''}
+        <div style="margin:14px 0">
+          <div style="display:flex;justify-content:space-between;font-size:.85rem;margin-bottom:6px">
+            <span style="color:#2e7d32;font-weight:700">${p.funded_amount.toLocaleString('ar-EG')} ج.م</span>
+            <span style="color:#888">من ${p.target_amount.toLocaleString('ar-EG')} ج.م</span>
+          </div>
+          <div class="progress-bar"><div class="progress-fill" style="width:${p.percent}%"></div></div>
+          <div style="text-align:left;font-size:.78rem;color:#888;margin-top:4px">${p.percent}%</div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <span style="font-size:.78rem;color:#aaa">المستفيد: ${p.beneficiary}</span>
+          ${p.status!=='funded'?`<button onclick="openFundModal(${p.id},'${p.name}')" style="padding:8px 16px;border-radius:10px;border:none;background:#2e7d32;color:#fff;cursor:pointer;font-size:.82rem;font-family:Poppins,sans-serif">
+            <i class="fas fa-heart" style="color:#fff;margin-left:4px"></i> ادعم
+          </button>`:`<span style="color:#15803d;font-weight:700;font-size:.85rem">✅ مكتمل</span>`}
+        </div>
+      </div>`).join('');
+  } catch(e) {
+    grid.innerHTML='<p style="color:#f87171;text-align:center;padding:40px;grid-column:1/-1">تعذر التحميل</p>';
+  }
+}
+
+function openFundModal(id, name) {
+  const token = localStorage.getItem('authToken');
+  if (!token) { alert('يجب تسجيل الدخول أولاً'); window.location='login.html'; return; }
+  selectedProjectId = id;
+  document.getElementById('modalProjectName').textContent = name;
+  document.getElementById('fundModalSuccess').style.display='none';
+  document.getElementById('modalAmount').value='';
+  const modal = document.getElementById('fundModal');
+  modal.style.display='flex';
+}
+function closeFundModal() {
+  document.getElementById('fundModal').style.display='none';
+}
+
+async function submitFund() {
+  const amount = parseInt(document.getElementById('modalAmount').value);
+  if (!amount||amount<1) { alert('يرجى إدخال مبلغ صحيح'); return; }
+  try {
+    const r = await apiRequest(`/micro-projects/${selectedProjectId}/fund`,'POST',{amount},true);
+    const el = document.getElementById('fundModalSuccess');
+    el.style.display='block'; el.textContent='✅ '+r.message;
+    loadProjects();
+    setTimeout(closeFundModal,2500);
+  } catch(e) { alert('خطأ: '+e.message); }
+}
+
+document.addEventListener('DOMContentLoaded', loadProjects);
+</script>
+</body>
+</html>

@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>المساعد الذكي — حياة أفضل</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="sidebar.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  .lang-grid{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:16px 0 24px}
+  .lang-btn{padding:7px 14px;border-radius:20px;border:1.5px solid rgba(99,102,241,.3);background:rgba(99,102,241,.08);color:#818cf8;cursor:pointer;font-size:.82rem;font-family:Poppins,sans-serif;transition:.2s}
+  .lang-btn.active,.lang-btn:hover{background:rgba(99,102,241,.2);border-color:#6366f1;color:#6366f1}
+  .chat-window{min-height:420px;max-height:520px;overflow-y:auto;background:rgba(15,15,25,.55);border-radius:18px;padding:20px;border:1px solid rgba(99,102,241,.15);margin-bottom:16px;display:flex;flex-direction:column;gap:12px}
+  .msg{max-width:78%;padding:12px 16px;border-radius:16px;font-size:.9rem;line-height:1.6;animation:fadeUp .3s ease}
+  .msg.bot{align-self:flex-start;background:rgba(99,102,241,.15);border:1px solid rgba(99,102,241,.2);color:#c4b5fd}
+  .msg.user{align-self:flex-end;background:rgba(46,125,50,.2);border:1px solid rgba(46,125,50,.3);color:#d1fae5}
+  .msg.bot .msg-sender{color:#818cf8;font-size:.75rem;margin-bottom:4px}
+  .chat-input-row{display:flex;gap:10px;align-items:center}
+  .chat-input-row input{flex:1;padding:13px 18px;border-radius:14px;border:1.5px solid rgba(99,102,241,.25);background:rgba(255,255,255,.04);color:#f0f4f0;font-size:.9rem;outline:none;font-family:Poppins,sans-serif;transition:.2s}
+  .chat-input-row input:focus{border-color:#6366f1;background:rgba(99,102,241,.08)}
+  .chat-send-btn{padding:13px 20px;border-radius:14px;border:none;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;cursor:pointer;font-size:1rem}
+  .chat-send-btn:hover{opacity:.88}
+  .typing-dots{display:flex;gap:4px;align-items:center;padding:8px 0}
+  .typing-dots span{width:7px;height:7px;background:#818cf8;border-radius:50%;animation:bounce .6s infinite alternate}
+  .typing-dots span:nth-child(2){animation-delay:.2s}
+  .typing-dots span:nth-child(3){animation-delay:.4s}
+  @keyframes bounce{from{transform:translateY(0)}to{transform:translateY(-6px)}}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+</style>
+</head>
+<body>
+<div id="loading"><div class="loader"></div></div>
+
+<div class="main-content">
+  <div class="page-hero-mini" style="background:linear-gradient(135deg,rgba(10,10,30,.9),rgba(79,70,229,.7))">
+    <i class="fas fa-robot hero-icon" style="filter:drop-shadow(0 0 22px #818cf8)"></i>
+    <h1 style="color:#e0e7ff">المساعد الذكي</h1>
+    <p style="color:#c4b5fd">اسألني بأي لغة — أنا هنا لمساعدتك على التبرع، التطوع، وفهم برامجنا</p>
+  </div>
+
+  <!-- Language selector -->
+  <div style="max-width:860px;margin:0 auto;padding:0 30px">
+    <div style="text-align:center;color:#818cf8;font-size:.85rem;margin-bottom:4px">اختر لغة المحادثة</div>
+    <div class="lang-grid" id="langGrid">
+      <button class="lang-btn active" data-lang="ar"   onclick="setLang('ar',this)">العربية</button>
+      <button class="lang-btn"        data-lang="en"   onclick="setLang('en',this)">English</button>
+      <button class="lang-btn"        data-lang="fr"   onclick="setLang('fr',this)">Français</button>
+      <button class="lang-btn"        data-lang="es"   onclick="setLang('es',this)">Español</button>
+      <button class="lang-btn"        data-lang="de"   onclick="setLang('de',this)">Deutsch</button>
+      <button class="lang-btn"        data-lang="tr"   onclick="setLang('tr',this)">Türkçe</button>
+      <button class="lang-btn"        data-lang="id"   onclick="setLang('id',this)">Bahasa</button>
+      <button class="lang-btn"        data-lang="ur"   onclick="setLang('ur',this)">اردو</button>
+      <button class="lang-btn"        data-lang="ha"   onclick="setLang('ha',this)">Hausa</button>
+      <button class="lang-btn"        data-lang="sw"   onclick="setLang('sw',this)">Swahili</button>
+    </div>
+
+    <!-- Quick help buttons -->
+    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;justify-content:center" id="quickBtns"></div>
+
+    <!-- Chat window -->
+    <div class="chat-window" id="chatWindow"></div>
+
+    <!-- Input -->
+    <div class="chat-input-row">
+      <input type="text" id="chatInput" placeholder="اكتب سؤالك هنا..." onkeydown="if(event.key==='Enter')sendMsg()">
+      <button class="chat-send-btn" onclick="sendMsg()"><i class="fas fa-paper-plane" style="color:#fff;margin:0"></i></button>
+    </div>
+    <p style="color:#555;font-size:.75rem;text-align:center;margin-top:10px">هذا المساعد يعمل دون الحاجة لاتصال خارجي — ردود ذكية مبنية مسبقاً</p>
+  </div>
+
+  <div style="height:60px"></div>
+</div>
+
+<script src="script.js"></script>
+<script src="sidebar.js"></script>
+<script>
+let currentLang = 'ar';
+
+const greetings = {
+  ar:'مرحباً! أنا المساعد الذكي لمنظمة "حياة أفضل". كيف يمكنني مساعدتك اليوم؟',
+  en:"Hello! I'm the smart assistant for 'Better Life'. How can I help you today?",
+  fr:'Bonjour! Je suis l\'assistant intelligent de "Better Life". Comment puis-je vous aider?',
+  es:'¡Hola! Soy el asistente inteligente de "Better Life". ¿Cómo puedo ayudarte hoy?',
+  de:'Hallo! Ich bin der intelligente Assistent von "Better Life". Wie kann ich Ihnen helfen?',
+  tr:'Merhaba! "Daha İyi Yaşam" kuruluşunun akıllı asistanıyım. Bugün nasıl yardımcı olabilirim?',
+  id:'Halo! Saya asisten cerdas "Better Life". Bagaimana saya bisa membantu Anda hari ini?',
+  ur:'السلام علیکم! میں "بہتر زندگی" کا ذہین معاون ہوں۔ آج آپ کی کیا خدمت کر سکتا ہوں؟',
+  ha:'Sannu! Ni ne mataimakin hankali na "Rayuwa Mafi Kyau". Yaya zan taimake ku yau?',
+  sw:'Habari! Mimi ni msaidizi wa akili ya "Maisha Bora". Ninawezaje kukusaidia leo?',
+};
+
+const quickSuggestions = {
+  ar:['كيف أتبرع؟','كيف أتطوع؟','ما هي الاحتياجات المتاحة؟','كيف أرفع طلب مساعدة؟','صناديق الصدقة'],
+  en:['How to donate?','How to volunteer?','Available needs?','How to request help?','Charity funds'],
+  fr:['Comment donner?','Comment bénévoler?','Besoins disponibles?','Demander de l\'aide?','Fonds de charité'],
+  es:['¿Cómo donar?','¿Cómo ser voluntario?','¿Necesidades disponibles?','¿Cómo pedir ayuda?'],
+  de:['Wie spende ich?','Wie ehrenamtlich?','Verfügbare Bedürfnisse?','Hilfe beantragen?'],
+  tr:['Nasıl bağış yapılır?','Nasıl gönüllü olunur?','Mevcut ihtiyaçlar?','Yardım nasıl istenir?'],
+  id:['Cara donasi?','Cara jadi relawan?','Kebutuhan tersedia?','Cara minta bantuan?'],
+  ur:['عطیہ کیسے دیں؟','رضاکار کیسے بنیں؟','مدد کیسے مانگیں؟'],
+  ha:['Yadda ake bayarwa?','Yadda ake sa kai?'],
+  sw:['Jinsi ya kutoa?','Jinsi ya kujitolea?'],
+};
+
+const responses = {
+  ar: {
+    'تبرع|كيف أتبرع|طريقة التبرع':'يمكنك التبرع بالمال عبر صفحة التبرع النقدي، أو بالملابس والطعام والدواء عبر الصفحات المخصصة. انقر على "التبرع" في القائمة الجانبية.',
+    'تطوع|كيف أتطوع|تسجيل متطوع':'يمكنك التسجيل كمتطوع عبر صفحة التطوع، وإذا كنت محققاً ميدانياً توجه لصفحة المتطوع المحقق.',
+    'احتياج|احتياجات|طلب مساعدة|طلب احتياج':'يمكن لأي شخص رفع طلب احتياج عبر صفحة "تقديم طلب". سيتم مراجعته من فريقنا.',
+    'صندوق|صناديق|صدقة':'صناديق الصدقة هي حصالة رقمية تجمع فيها عائلتك أو أصدقاؤك لمشروع خير كحفر بئر أو بناء مدرسة.',
+    'مهارة|مهارات|تبرع بمهارة':'يمكنك التبرع بمهارتك الطبية أو التعليمية أو التقنية أو القانونية عبر صفحة "التبرع بالمهارات".',
+    'مشروع|مشاريع صغيرة|ماكينة|عربة':'نموّل مشاريع صغيرة كماكينات الخياطة وعربات البضائع لتحويل المحتاج إلى منتج.',
+    'خريطة|حرارية|هيت ماب':'الخريطة الحرارية تُظهر المناطق الأكثر احتياجاً بألوان مختلفة لتوجيه التبرعات.',
+    'شكرا|شكراً|ممنون':'العفو! يسعدني خدمتك دائماً 😊 هل تحتاج مساعدة في شيء آخر؟',
+    'مرحبا|اهلا|السلام':'أهلاً بك! كيف يمكنني مساعدتك اليوم؟',
+  },
+  en: {
+    'donate|donation|how to give':'You can donate money, clothes, food, or medicine via the Donate page. Click "Donation" in the sidebar.',
+    'volunteer|volunteering':'Register as a volunteer from the Volunteer page. If you\'re a field investigator, visit the Volunteer Investigator page.',
+    'need|request|help':'Anyone can submit a need request through the "Submit Request" page. Our team will review it.',
+    'fund|charity fund|piggy bank':'Charity funds are digital piggy banks for your family or friends to collect for one project like digging a well.',
+    'skill|skills|teach|doctor':'Donate your medical, teaching, tech, or legal skills via the Skill-Based Giving page.',
+    'micro project|sewing|cart':'We fund small projects like sewing machines and carts to turn those in need into productive people.',
+    'thank|thanks':'You\'re welcome! Happy to help anytime 😊',
+    'hello|hi|hey':'Hello! How can I assist you today?',
+  },
+  fr: {
+    'don|donner|comment donner':'Vous pouvez faire un don d\'argent, de vêtements, de nourriture ou de médicaments via la page Dons.',
+    'bénévole|volontaire':'Inscrivez-vous comme bénévole sur la page Bénévolat.',
+    'besoin|demande|aide':'Toute personne peut soumettre une demande d\'aide via la page "Soumettre une demande".',
+    'merci':'De rien! Heureux de vous aider 😊',
+    'bonjour|salut':'Bonjour! Comment puis-je vous aider aujourd\'hui?',
+  },
+  es: {
+    'donar|donación':'Puede donar dinero, ropa, comida o medicamentos a través de la página de Donaciones.',
+    'voluntario|voluntariado':'Regístrese como voluntario en la página de Voluntariado.',
+    'gracias':'¡De nada! Feliz de ayudarte 😊',
+    'hola':'¡Hola! ¿Cómo puedo ayudarte hoy?',
+  },
+  de: {
+    'spende|spenden':'Sie können Geld, Kleidung, Essen oder Medizin über die Spendenseite spenden.',
+    'ehrenamt|freiwillig':'Registrieren Sie sich als Freiwilliger auf der Freiwilligenenseite.',
+    'danke':'Gern geschehen! Ich helfe immer gerne 😊',
+    'hallo':'Hallo! Wie kann ich Ihnen heute helfen?',
+  },
+  tr: {
+    'bağış|bağış yapmak':'Para, giysi, yiyecek veya ilaç bağışlayabilirsiniz.',
+    'gönüllü':'Gönüllü Sayfasından kaydolabilirsiniz.',
+    'teşekkür':'Rica ederim! Her zaman yardımcı olmaktan mutluluk duyarım 😊',
+    'merhaba':'Merhaba! Bugün nasıl yardımcı olabilirim?',
+  },
+  id: {
+    'donasi|donasikan':'Anda bisa mendonasikan uang, pakaian, makanan, atau obat-obatan melalui halaman Donasi.',
+    'relawan':'Daftar sebagai relawan di halaman Relawan.',
+    'terima kasih':'Sama-sama! Senang membantu 😊',
+    'halo|hallo':'Halo! Bagaimana saya bisa membantu Anda hari ini?',
+  },
+  ur: {
+    'عطیہ|عطیہ کریں':'آپ پیسے، کپڑے، کھانا یا دوائیں عطیہ کر سکتے ہیں۔',
+    'رضاکار':'رضاکار کے طور پر رجسٹر کریں۔',
+    'شکریہ':'خوشی سے! ہمیشہ مدد کے لیے حاضر ہوں 😊',
+    'السلام|ہیلو':'السلام علیکم! آج میں آپ کی کیا مدد کر سکتا ہوں؟',
+  },
+  ha: {
+    'bayarwa':'Zaka iya bayar da kudi, tufafi, abinci ko magunguna.',
+    'sa kai':'Yi rijista a matsayin mai sa kai.',
+    'nagode':'Maraba! Yanda zan iya taimakawa 😊',
+    'sannu':'Sannu! Yaya zan taimake ku yau?',
+  },
+  sw: {
+    'kutoa|mchango':'Unaweza kutoa pesa, nguo, chakula, au dawa.',
+    'kujitolea':'Jiandikishe kama mjitolea.',
+    'asante':'Karibu! Furaha kusaidia 😊',
+    'habari':'Habari! Ninawezaje kukusaidia leo?',
+  },
+};
+
+const defaultReply = {
+  ar:'لم أفهم سؤالك جيداً، لكن يمكنك تجربة أحد الأزرار السريعة أعلاه أو إعادة صياغة سؤالك.',
+  en:"I didn't quite understand. Try the quick buttons above or rephrase your question.",
+  fr:'Je n\'ai pas bien compris. Essayez les boutons rapides ci-dessus.',
+  es:'No entendí bien. Prueba los botones rápidos de arriba.',
+  de:'Ich habe nicht ganz verstanden. Versuchen Sie die Schnellschaltflächen oben.',
+  tr:'Tam anlayamadım. Yukarıdaki hızlı düğmeleri deneyin.',
+  id:'Saya kurang mengerti. Coba tombol cepat di atas.',
+  ur:'میں پوری طرح سمجھ نہیں سکا۔ اوپر دیے گئے بٹن آزمائیں۔',
+  ha:'Ban fahimta sosai ba. Gwada maɓallan da ke sama.',
+  sw:'Sijielewa vizuri. Jaribu vitufe vya haraka hapo juu.',
+};
+
+function getReply(text) {
+  const lang = currentLang;
+  const t = text.toLowerCase();
+  const rmap = responses[lang] || responses['ar'];
+  for (const [pattern, reply] of Object.entries(rmap)) {
+    const regex = new RegExp(pattern,'i');
+    if (regex.test(t)) return reply;
+  }
+  return defaultReply[lang] || defaultReply['ar'];
+}
+
+function setLang(lang, btn) {
+  currentLang = lang;
+  document.querySelectorAll('.lang-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  buildQuickBtns();
+  const chatInput = document.getElementById('chatInput');
+  chatInput.placeholder = lang==='ar'?'اكتب سؤالك هنا...' : 'Type your message...';
+}
+
+function buildQuickBtns() {
+  const div = document.getElementById('quickBtns');
+  const btns = quickSuggestions[currentLang] || quickSuggestions['ar'];
+  div.innerHTML = btns.map(b=>`<button onclick="sendQuick('${b}')" style="padding:6px 14px;border-radius:20px;border:1.5px solid rgba(99,102,241,.25);background:rgba(99,102,241,.06);color:#818cf8;cursor:pointer;font-size:.8rem;font-family:Poppins,sans-serif;transition:.2s" onmouseover="this.style.background='rgba(99,102,241,.15)'" onmouseout="this.style.background='rgba(99,102,241,.06)'">${b}</button>`).join('');
+}
+
+function appendMsg(text, who) {
+  const win = document.getElementById('chatWindow');
+  const div = document.createElement('div');
+  div.className = `msg ${who}`;
+  if (who==='bot') div.innerHTML = `<div class="msg-sender"><i class="fas fa-robot" style="margin-left:4px"></i> المساعد</div>${text}`;
+  else div.textContent = text;
+  win.appendChild(div);
+  win.scrollTop = win.scrollHeight;
+}
+
+function showTyping() {
+  const win = document.getElementById('chatWindow');
+  const div = document.createElement('div');
+  div.className = 'msg bot'; div.id = 'typing';
+  div.innerHTML = '<div class="typing-dots"><span></span><span></span><span></span></div>';
+  win.appendChild(div);
+  win.scrollTop = win.scrollHeight;
+}
+function removeTyping() {
+  const t = document.getElementById('typing');
+  if (t) t.remove();
+}
+
+function sendMsg() {
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  appendMsg(text, 'user');
+  showTyping();
+  setTimeout(()=>{
+    removeTyping();
+    appendMsg(getReply(text), 'bot');
+  }, 700 + Math.random()*500);
+}
+
+function sendQuick(text) {
+  document.getElementById('chatInput').value = text;
+  sendMsg();
+}
+
+document.addEventListener('DOMContentLoaded', ()=>{
+  buildQuickBtns();
+  appendMsg(greetings[currentLang], 'bot');
+});
+</script>
+</body>
+</html>

@@ -9,6 +9,10 @@ use App\Http\Controllers\Api\NeedCommentController;
 use App\Http\Controllers\Api\OchaController;
 use App\Http\Controllers\Api\AnalyticsController;
 use App\Http\Controllers\Api\DonationController;
+use App\Http\Controllers\Api\SkillDonationController;
+use App\Http\Controllers\Api\CharityFundController;
+use App\Http\Controllers\Api\MicroProjectController;
+use App\Http\Controllers\Api\VolunteerValidationController;
 
 Route::middleware('throttle:5,1')->group(function () {
     Route::post('/register', [AuthController::class, 'register']);
@@ -40,7 +44,22 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/me', function (Request $request) {
         return $request->user();
     });
+
+    // ===== New features - authenticated =====
+    Route::post('/skill-donations', [SkillDonationController::class, 'store']);
+    Route::post('/charity-funds', [CharityFundController::class, 'store']);
+    Route::post('/charity-funds/{id}/contribute', [CharityFundController::class, 'contribute']);
+    Route::post('/micro-projects/{id}/fund', [MicroProjectController::class, 'fund']);
+    Route::post('/volunteer-validations', [VolunteerValidationController::class, 'store']);
 });
 
 // Public comments read
 Route::get('/needs/{need}/comments', [NeedCommentController::class, 'index']);
+
+// ===== New features - public =====
+Route::get('/skill-donations', [SkillDonationController::class, 'index']);
+Route::get('/charity-funds', [CharityFundController::class, 'index']);
+Route::post('/charity-funds/join', [CharityFundController::class, 'joinByCode']);
+Route::get('/micro-projects', [MicroProjectController::class, 'index']);
+Route::get('/volunteer-validations', [VolunteerValidationController::class, 'index']);
+Route::get('/heatmap', [VolunteerValidationController::class, 'heatmap']);

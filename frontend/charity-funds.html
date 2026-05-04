@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>صناديق الصدقة — حياة أفضل</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="sidebar.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+<div id="loading"><div class="loader"></div></div>
+
+<div class="main-content">
+  <div class="page-hero-mini" style="background:linear-gradient(135deg,rgba(10,30,10,.9),rgba(161,98,7,.8))">
+    <i class="fas fa-piggy-bank hero-icon" style="filter:drop-shadow(0 0 20px #fbbf24)"></i>
+    <h1>صناديق الاستثمار الصدقي</h1>
+    <p>حصالة رقمية لعائلتك أو شركتك أو أصدقائك — اجمعوا معاً لمشروع خير واحد</p>
+  </div>
+
+  <!-- Stats -->
+  <div style="max-width:900px;margin:0 auto;padding:30px 30px 10px;display:flex;gap:16px;flex-wrap:wrap">
+    <div class="glass-card" style="flex:1;min-width:160px;padding:20px;text-align:center">
+      <div style="font-size:1.8rem;font-weight:700;color:#2e7d32" id="statFunds">—</div>
+      <div style="color:#888;font-size:.85rem">صندوق نشط</div>
+    </div>
+    <div class="glass-card" style="flex:1;min-width:160px;padding:20px;text-align:center">
+      <div style="font-size:1.8rem;font-weight:700;color:#2e7d32" id="statTotal">—</div>
+      <div style="color:#888;font-size:.85rem">إجمالي التبرعات (ج.م)</div>
+    </div>
+    <div class="glass-card" style="flex:1;min-width:160px;padding:20px;text-align:center">
+      <div style="font-size:1.8rem;font-weight:700;color:#2e7d32" id="statCompleted">—</div>
+      <div style="color:#888;font-size:.85rem">مشروع اكتمل</div>
+    </div>
+  </div>
+
+  <!-- Funds list -->
+  <div style="max-width:1100px;margin:0 auto;padding:0 30px 20px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <h2 style="color:#2e7d32"><i class="fas fa-list-ul"></i> الصناديق النشطة</h2>
+      <div style="display:flex;gap:8px">
+        <input type="text" id="codeInput" placeholder="كود الدعوة" style="padding:9px 14px;border-radius:10px;border:1.5px solid rgba(46,125,50,.25);font-size:.88rem;outline:none;font-family:Poppins,sans-serif">
+        <button onclick="joinByCode()" style="padding:9px 16px;border-radius:10px;border:none;background:#2e7d32;color:#fff;cursor:pointer;font-family:Poppins,sans-serif">
+          <i class="fas fa-link" style="color:#fff;margin-left:4px"></i> انضم
+        </button>
+      </div>
+    </div>
+    <div id="fundsList" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px">
+      <p style="color:#aaa;text-align:center;padding:40px;grid-column:1/-1">جارٍ التحميل...</p>
+    </div>
+  </div>
+
+  <!-- Create fund + Contribute -->
+  <div style="padding:10px 30px 60px;display:flex;gap:24px;flex-wrap:wrap;max-width:1100px;margin:0 auto">
+    <!-- Create -->
+    <div class="form-glass" style="flex:1;min-width:280px;max-width:100%">
+      <h2><i class="fas fa-plus" style="color:#2e7d32;margin-left:8px"></i> أنشئ صندوقاً جديداً</h2>
+      <div class="form-group">
+        <label>اسم الصندوق</label>
+        <input type="text" id="fundName" placeholder="مثال: حصالة عائلة أحمد لبناء بئر">
+      </div>
+      <div class="form-group">
+        <label>نوع المشروع</label>
+        <select id="fundType">
+          <option value="well">💧 حفر بئر</option>
+          <option value="village">🏘️ كفالة قرية</option>
+          <option value="school">📖 بناء مدرسة</option>
+          <option value="medical">🏥 مستلزمات طبية</option>
+          <option value="other">✨ أخرى</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>وصف الهدف</label>
+        <textarea id="fundDesc" placeholder="اشرح هدف الصندوق للمشاركين..."></textarea>
+      </div>
+      <div class="form-group">
+        <label>المبلغ المستهدف (جنيه مصري)</label>
+        <input type="number" id="fundGoal" min="100" placeholder="50000">
+      </div>
+      <button class="submit-btn" onclick="createFund()">
+        <i class="fas fa-piggy-bank"></i> إنشاء الصندوق
+      </button>
+      <div class="alert-success" id="fundSuccess"></div>
+    </div>
+
+    <!-- Contribute -->
+    <div class="form-glass" style="flex:1;min-width:280px;max-width:100%">
+      <h2><i class="fas fa-coins" style="color:#2e7d32;margin-left:8px"></i> أضف تبرعك لصندوق</h2>
+      <div class="form-group">
+        <label>رقم الصندوق (Fund ID)</label>
+        <input type="number" id="contribFundId" placeholder="انسخه من الصندوق أعلاه" min="1">
+      </div>
+      <div class="form-group">
+        <label>المبلغ (جنيه مصري)</label>
+        <input type="number" id="contribAmount" min="1" placeholder="500">
+      </div>
+      <div class="form-group">
+        <label>ملاحظة (اختياري)</label>
+        <input type="text" id="contribNote" placeholder="من أسرة محمد بحبٍّ">
+      </div>
+      <button class="submit-btn" onclick="contribute()">
+        <i class="fas fa-hand-holding-dollar"></i> تبرع للصندوق
+      </button>
+      <div class="alert-success" id="contribSuccess"></div>
+    </div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+<script src="sidebar.js"></script>
+<script>
+const typeIcons = {well:'💧',village:'🏘️',school:'📖',medical:'🏥',other:'✨'};
+
+async function loadFunds() {
+  const grid = document.getElementById('fundsList');
+  try {
+    const data = await apiRequest('/charity-funds');
+    const active = data.filter(f=>f.status==='active');
+    const completed = data.filter(f=>f.status==='completed');
+    document.getElementById('statFunds').textContent     = active.length;
+    document.getElementById('statTotal').textContent     = data.reduce((s,f)=>s+f.current_amount,0).toLocaleString('ar-EG');
+    document.getElementById('statCompleted').textContent = completed.length;
+
+    if (!data.length) {
+      grid.innerHTML='<p style="color:#aaa;text-align:center;padding:40px;grid-column:1/-1">لا توجد صناديق بعد — كن أول من ينشئ صندوقاً!</p>';
+      return;
+    }
+    grid.innerHTML = data.map(f=>`
+      <div class="glass-card fund-card">
+        <div style="font-size:2rem;margin-bottom:8px">${typeIcons[f.project_type]||'✨'}</div>
+        <h3 style="color:#1a1a1a;margin-bottom:6px">${f.name}</h3>
+        <div class="fund-meta">
+          <span class="fund-tag">${f.creator_name}</span>
+          <span class="fund-tag">${f.contributors} مساهم</span>
+          ${f.status==='completed'?'<span class="fund-tag" style="background:rgba(34,197,94,.15);color:#15803d">✅ مكتمل</span>':''}
+        </div>
+        <p style="color:#666;font-size:.87rem;line-height:1.6;margin:10px 0">${f.description||''}</p>
+        <div class="fund-amount">${f.current_amount.toLocaleString('ar-EG')} ج.م</div>
+        <div class="fund-goal">من أصل ${f.goal_amount.toLocaleString('ar-EG')} ج.م</div>
+        <div class="progress-bar" style="margin:12px 0">
+          <div class="progress-fill" style="width:${f.percent}%"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;font-size:.82rem;color:#888">
+          <span>${f.percent}% مكتمل</span>
+          <span>الكود: <strong style="color:#2e7d32;letter-spacing:1px">${f.invite_code}</strong></span>
+        </div>
+        <p style="font-size:.78rem;color:#aaa;margin-top:6px">ID: #${f.id}</p>
+      </div>`).join('');
+  } catch(e) {
+    grid.innerHTML='<p style="color:#f87171;text-align:center;padding:40px;grid-column:1/-1">تعذر التحميل</p>';
+  }
+}
+
+async function createFund() {
+  const token = localStorage.getItem('authToken');
+  if (!token) { alert('يجب تسجيل الدخول أولاً'); window.location='login.html'; return; }
+  const payload = {
+    name:         document.getElementById('fundName').value.trim(),
+    project_type: document.getElementById('fundType').value,
+    description:  document.getElementById('fundDesc').value.trim(),
+    goal_amount:  parseInt(document.getElementById('fundGoal').value),
+  };
+  if (!payload.name||!payload.goal_amount) { alert('يرجى ملء الاسم والمبلغ'); return; }
+  try {
+    const f = await apiRequest('/charity-funds','POST',payload,true);
+    const el = document.getElementById('fundSuccess');
+    el.style.display='block';
+    el.textContent = `✅ تم إنشاء الصندوق! كود الدعوة: ${f.invite_code}`;
+    loadFunds();
+  } catch(e) { alert('خطأ: '+e.message); }
+}
+
+async function contribute() {
+  const token = localStorage.getItem('authToken');
+  if (!token) { alert('يجب تسجيل الدخول أولاً'); window.location='login.html'; return; }
+  const fundId = document.getElementById('contribFundId').value;
+  const amount = document.getElementById('contribAmount').value;
+  if (!fundId||!amount) { alert('يرجى إدخال رقم الصندوق والمبلغ'); return; }
+  try {
+    const r = await apiRequest(`/charity-funds/${fundId}/contribute`,'POST',{
+      amount:parseInt(amount), note:document.getElementById('contribNote').value.trim()
+    },true);
+    const el = document.getElementById('contribSuccess');
+    el.style.display='block';
+    el.textContent = `✅ ${r.message} — الإجمالي: ${r.current_amount?.toLocaleString('ar-EG')} ج.م`;
+    loadFunds();
+  } catch(e) { alert('خطأ: '+e.message); }
+}
+
+async function joinByCode() {
+  const code = document.getElementById('codeInput').value.trim();
+  if (!code) return;
+  try {
+    const f = await apiRequest('/charity-funds/join','POST',{invite_code:code});
+    alert(`📦 صندوق: ${f.name}\nالمجموع: ${f.current_amount} / ${f.goal_amount} ج.م\nID: #${f.id}`);
+  } catch(e) { alert('كود غير صحيح'); }
+}
+
+document.addEventListener('DOMContentLoaded', loadFunds);
+</script>
+</body>
+</html>
