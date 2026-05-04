@@ -12,6 +12,7 @@ function buildSidebar() {
     { href: 'volunteer.html',            icon: 'fa-hands-praying',           label: 'تطوع الآن',              section: 'volunteer' },
     { href: 'charity-funds.html',        icon: 'fa-piggy-bank',              label: 'صناديق الصدقة',          section: 'give' },
     { href: 'micro-projects.html',       icon: 'fa-seedling',                label: 'مشاريع متناهية الصغر',   section: 'give' },
+    { href: 'gift-donation.html',        icon: 'fa-gift',                    label: 'هدية الصدقة الجارية',    section: 'give' },
     { href: 'donation.html',             icon: 'fa-circle-dollar-to-slot',   label: 'تبرع الآن',              section: 'give', extra: 'sidebar-donate' },
     { href: 'chatbot.html',              icon: 'fa-robot',                   label: 'المساعد الذكي (AI)',      section: 'ai',  extra: 'sidebar-ai' },
     { href: 'request.html',              icon: 'fa-file-medical',            label: 'تقديم طلب',              section: 'account' },
