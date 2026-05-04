@@ -20,6 +20,7 @@ use App\Http\Controllers\Api\ImpactWallController;
 use App\Http\Controllers\Api\EmergencyCaseController;
 use App\Http\Controllers\Api\LegacyGivingController;
 use App\Http\Controllers\Api\CsrCompanyController;
+use App\Http\Controllers\Api\HumanTwinController;
 
 Route::middleware('throttle:5,1')->group(function () {
     Route::post('/register', [AuthController::class, 'register']);
@@ -107,3 +108,12 @@ Route::post('/legacy', [LegacyGivingController::class, 'store']);
 // ===== CSR Companies =====
 Route::get('/csr', [CsrCompanyController::class, 'index']);
 Route::post('/csr/register', [CsrCompanyController::class, 'register']);
+
+// ===== Human Twin (التوأمة الإنسانية) =====
+Route::get('/twin/families',            [HumanTwinController::class, 'families']);
+Route::post('/twin/families',           [HumanTwinController::class, 'registerFamily']);
+Route::get('/twin/supporters',          [HumanTwinController::class, 'supporters']);
+Route::post('/twin/supporters',         [HumanTwinController::class, 'registerSupporter']);
+Route::get('/twin/messages/{sid}/{fid}', [HumanTwinController::class, 'messages']);
+Route::post('/twin/messages',           [HumanTwinController::class, 'sendMessage']);
+Route::get('/twin/stats',               [HumanTwinController::class, 'stats']);

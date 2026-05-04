@@ -11,6 +11,7 @@ function buildSidebar() {
     { href: 'volunteer-investigator.html', icon: 'fa-user-secret',            label: 'المتطوع المحقق',             section: 'volunteer' },
     { href: 'skill-giving.html',          icon: 'fa-screwdriver-wrench',      label: 'التبرع بالمهارات',           section: 'volunteer' },
     { href: 'volunteer.html',             icon: 'fa-hands-praying',           label: 'تطوع الآن',                  section: 'volunteer' },
+    { href: 'human-twin.html',            icon: 'fa-people-arrows',           label: 'التوأمة الإنسانية',          section: 'volunteer' },
     { href: 'impact-wall.html',           icon: 'fa-heart-circle-plus',       label: 'المجتمع والقصص',             section: 'volunteer' },
     { href: 'charity-funds.html',         icon: 'fa-piggy-bank',              label: 'صناديق الصدقة',              section: 'give' },
     { href: 'micro-projects.html',        icon: 'fa-seedling',                label: 'مشاريع متناهية الصغر',       section: 'give' },

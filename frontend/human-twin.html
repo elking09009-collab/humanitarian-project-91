@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>التوأمة الإنسانية — حياة أفضل</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="sidebar.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* ── Twin-specific styles ── */
+.twin-hero-badge {
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(255,255,255,.15);padding:6px 16px;border-radius:30px;
+  font-size:.82rem;margin-bottom:12px
+}
+.tab-bar {
+  display:flex;gap:6px;flex-wrap:wrap;margin-bottom:24px;
+  background:#f8fafc;border-radius:14px;padding:6px
+}
+.tab-btn {
+  flex:1;min-width:140px;padding:10px 16px;border:none;border-radius:10px;
+  background:transparent;cursor:pointer;font-size:.88rem;font-weight:600;
+  color:#666;transition:.2s;font-family:'Poppins',sans-serif
+}
+.tab-btn.active {
+  background:#fff;color:#2e7d32;
+  box-shadow:0 2px 12px rgba(46,125,50,.15)
+}
+.twin-card {
+  background:#fff;border-radius:16px;padding:20px 22px;
+  border:1px solid rgba(46,125,50,.1);transition:.25s;
+  box-shadow:0 2px 14px rgba(0,0,0,.05);position:relative
+}
+.twin-card:hover { transform:translateY(-3px);box-shadow:0 8px 28px rgba(46,125,50,.14) }
+.twin-grid { display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:18px }
+.twin-badge {
+  position:absolute;top:14px;left:14px;
+  padding:3px 12px;border-radius:20px;font-size:.7rem;font-weight:700
+}
+.badge-pending  { background:#fef9c3;color:#ca8a04 }
+.badge-matched  { background:#dcfce7;color:#16a34a }
+.badge-active   { background:#dbeafe;color:#2563eb }
+.badge-completed{ background:#f3e8ff;color:#9333ea }
+.need-chip {
+  display:inline-flex;align-items:center;gap:4px;
+  padding:3px 10px;border-radius:20px;font-size:.72rem;font-weight:600;
+  background:#f0fdf4;color:#166534;border:1px solid #bbf7d0;margin:2px
+}
+.support-chip {
+  display:inline-flex;align-items:center;gap:4px;
+  padding:3px 10px;border-radius:20px;font-size:.72rem;font-weight:600;
+  background:#eff6ff;color:#1e40af;border:1px solid #bfdbfe;margin:2px
+}
+.match-banner {
+  background:linear-gradient(135deg,#065f46,#14532d);
+  border-radius:16px;padding:22px 26px;color:#fff;margin-bottom:24px;
+  display:flex;align-items:center;gap:18px;flex-wrap:wrap
+}
+.match-banner i { font-size:2.2rem;opacity:.9 }
+.stat-twin {
+  background:#fff;border-radius:14px;padding:18px;text-align:center;
+  box-shadow:0 2px 12px rgba(0,0,0,.06);flex:1;min-width:120px
+}
+.stat-twin .num { font-size:1.8rem;font-weight:700;color:#2e7d32 }
+.chat-bubble {
+  padding:10px 16px;border-radius:12px;max-width:75%;word-break:break-word;
+  margin-bottom:8px;font-size:.88rem;line-height:1.6
+}
+.bubble-platform { background:#f0fdf4;color:#166534;border:1px solid #bbf7d0;margin:auto }
+.bubble-supporter{ background:#2e7d32;color:#fff;margin-right:auto }
+.bubble-family   { background:#f1f5f9;color:#334155;margin-left:auto;text-align:left }
+.chat-box {
+  height:260px;overflow-y:auto;padding:14px;border:1px solid #e5e7eb;
+  border-radius:12px;background:#fafafa;display:flex;flex-direction:column;gap:4px
+}
+.chat-send-row { display:flex;gap:8px;margin-top:10px }
+.chat-send-row input { flex:1 }
+.pair-indicator {
+  display:flex;align-items:center;justify-content:center;gap:12px;
+  padding:14px;background:#f0fdf4;border-radius:12px;margin-bottom:16px;
+  font-size:.88rem;font-weight:600;color:#166534;flex-wrap:wrap
+}
+.pair-arrow { font-size:1.4rem;color:#4ade80 }
+.filter-row { display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;align-items:center }
+.filter-row select, .filter-row input { flex:1;min-width:140px }
+.empty-state {
+  text-align:center;padding:50px 20px;color:#999
+}
+.empty-state i { font-size:3rem;opacity:.3;display:block;margin-bottom:10px }
+/* Modal */
+.twin-modal-overlay {
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);
+  z-index:9000;align-items:center;justify-content:center;padding:20px
+}
+.twin-modal-overlay.open { display:flex }
+.twin-modal {
+  background:#fff;border-radius:20px;padding:28px;width:100%;max-width:500px;
+  max-height:90vh;overflow-y:auto;position:relative
+}
+.twin-modal h3 { margin-bottom:18px;color:#1a3a2a }
+.twin-modal-close {
+  position:absolute;top:14px;left:14px;background:none;border:none;
+  font-size:1.3rem;cursor:pointer;color:#999
+}
+</style>
+</head>
+<body>
+<div id="loading"><div class="loader"></div></div>
+
+<div class="main-content">
+  <!-- Hero -->
+  <div class="page-hero-mini" style="background:linear-gradient(135deg,rgba(5,46,22,.93),rgba(21,128,61,.85))">
+    <div class="twin-hero-badge"><i class="fas fa-people-arrows"></i> برنامج التوأمة الإنسانية</div>
+    <i class="fas fa-heart hero-icon" style="font-size:2.8rem;filter:drop-shadow(0 0 20px #4ade80)"></i>
+    <h1>عائلة تُعانق عائلة</h1>
+    <p>نظام يربط عائلة ميسورة بعائلة محتاجة — دعم مادي، استشاري، ومعنوي على المدى الطويل</p>
+  </div>
+
+  <div style="max-width:960px;margin:0 auto;padding:24px 20px 100px">
+
+    <!-- Stats Row -->
+    <div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:28px" id="statsRow">
+      <div class="stat-twin"><div class="num" id="st-families">—</div><div style="font-size:.78rem;color:#888">أسرة محتاجة</div></div>
+      <div class="stat-twin"><div class="num" id="st-pending">—</div><div style="font-size:.78rem;color:#888">بانتظار التوأم</div></div>
+      <div class="stat-twin"><div class="num" id="st-matched">—</div><div style="font-size:.78rem;color:#888">توأمة مكتملة</div></div>
+      <div class="stat-twin"><div class="num" id="st-supporters">—</div><div style="font-size:.78rem;color:#888">داعم مسجّل</div></div>
+      <div class="stat-twin"><div class="num" id="st-messages">—</div><div style="font-size:.78rem;color:#888">رسالة دعم</div></div>
+    </div>
+
+    <!-- Match Banner -->
+    <div class="match-banner">
+      <i class="fas fa-people-arrows"></i>
+      <div>
+        <div style="font-size:1.05rem;font-weight:700;margin-bottom:4px">كيف تعمل التوأمة؟</div>
+        <div style="font-size:.85rem;opacity:.9;line-height:1.7">
+          ① سجّل كأسرة داعمة أو أسرة محتاجة ← ② تقوم المنظومة بالمطابقة الذكية ← ③ تواصل مباشر تحت إشراف المنصة ← ④ دعم شامل: مادي، استشاري، نفسي، تعليمي
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="switchTab('families')"><i class="fas fa-house-user" style="margin-left:6px"></i>الأسر المحتاجة</button>
+      <button class="tab-btn" onclick="switchTab('supporters')"><i class="fas fa-hand-holding-heart" style="margin-left:6px"></i>الداعمون</button>
+      <button class="tab-btn" onclick="switchTab('register-family')"><i class="fas fa-plus-circle" style="margin-left:6px"></i>تسجيل أسرة</button>
+      <button class="tab-btn" onclick="switchTab('register-supporter')"><i class="fas fa-user-plus" style="margin-left:6px"></i>أنا داعم</button>
+      <button class="tab-btn" onclick="switchTab('chat')"><i class="fas fa-comments" style="margin-left:6px"></i>رسالة الدعم</button>
+    </div>
+
+    <!-- ── TAB: Families ── -->
+    <div id="tab-families">
+      <div class="filter-row">
+        <input type="text" id="f-city-filter" placeholder="فلتر بالمدينة..." oninput="loadFamilies()">
+        <select id="f-status-filter" onchange="loadFamilies()">
+          <option value="">كل الحالات</option>
+          <option value="pending">بانتظار توأم</option>
+          <option value="matched">مُتوأَمة</option>
+          <option value="completed">مكتملة</option>
+        </select>
+      </div>
+      <div class="twin-grid" id="familiesGrid">
+        <div class="empty-state"><i class="fas fa-spinner fa-spin"></i>جاري التحميل...</div>
+      </div>
+    </div>
+
+    <!-- ── TAB: Supporters ── -->
+    <div id="tab-supporters" style="display:none">
+      <div class="filter-row">
+        <input type="text" id="s-city-filter" placeholder="فلتر بالمدينة..." oninput="loadSupporters()">
+      </div>
+      <div class="twin-grid" id="supportersGrid">
+        <div class="empty-state"><i class="fas fa-spinner fa-spin"></i>جاري التحميل...</div>
+      </div>
+    </div>
+
+    <!-- ── TAB: Register Family ── -->
+    <div id="tab-register-family" style="display:none">
+      <div class="glass-card" style="padding:28px">
+        <h3 style="color:#1a3a2a;margin-bottom:18px"><i class="fas fa-house-user" style="margin-left:8px;color:#2e7d32"></i>تسجيل أسرة محتاجة</h3>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+          <div class="form-group"><label>اسم ربّ الأسرة *</label><input type="text" id="rf-name" placeholder="الاسم كاملاً" required></div>
+          <div class="form-group"><label>رقم الهاتف *</label><input type="tel" id="rf-phone" placeholder="01xxxxxxxxx" required></div>
+          <div class="form-group"><label>المدينة *</label><input type="text" id="rf-city" placeholder="مثال: القاهرة" required></div>
+          <div class="form-group"><label>الحي / المنطقة</label><input type="text" id="rf-area" placeholder="اختياري"></div>
+          <div class="form-group"><label>عدد أفراد الأسرة *</label><input type="number" id="rf-members" min="1" max="30" value="4"></div>
+        </div>
+        <div class="form-group" style="margin-top:10px">
+          <label>احتياجات الأسرة * (يمكن اختيار أكثر من واحد)</label>
+          <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:8px" id="needsCheck">
+            <label class="check-chip"><input type="checkbox" value="food"> 🍞 غذاء</label>
+            <label class="check-chip"><input type="checkbox" value="education"> 📚 تعليم</label>
+            <label class="check-chip"><input type="checkbox" value="medical"> 💊 رعاية طبية</label>
+            <label class="check-chip"><input type="checkbox" value="psychological"> 🧠 دعم نفسي</label>
+            <label class="check-chip"><input type="checkbox" value="housing"> 🏠 سكن</label>
+            <label class="check-chip"><input type="checkbox" value="financial"> 💰 مالي</label>
+          </div>
+        </div>
+        <div class="form-group"><label>قصة الأسرة (اختياري)</label>
+          <textarea id="rf-story" placeholder="اشرح وضع الأسرة باختصار لمساعدة المنصة في إيجاد التوأم المناسب..."></textarea></div>
+        <button onclick="submitFamily()" class="submit-btn" style="max-width:220px;background:linear-gradient(135deg,#065f46,#2e7d32)">
+          <i class="fas fa-paper-plane"></i> تقديم الطلب
+        </button>
+        <div id="rf-msg" style="margin-top:12px"></div>
+      </div>
+    </div>
+
+    <!-- ── TAB: Register Supporter ── -->
+    <div id="tab-register-supporter" style="display:none">
+      <div class="glass-card" style="padding:28px">
+        <h3 style="color:#1a3a2a;margin-bottom:18px"><i class="fas fa-user-plus" style="margin-left:8px;color:#2563eb"></i>تسجيل كداعم</h3>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+          <div class="form-group"><label>اسمك الكريم *</label><input type="text" id="rs-name" placeholder="يظهر بالبطاقة" required></div>
+          <div class="form-group"><label>رقم الهاتف *</label><input type="tel" id="rs-phone" placeholder="01xxxxxxxxx" required></div>
+          <div class="form-group"><label>البريد الإلكتروني</label><input type="email" id="rs-email" placeholder="اختياري"></div>
+          <div class="form-group"><label>مدينتك *</label><input type="text" id="rs-city" placeholder="مثال: الإسكندرية" required></div>
+          <div class="form-group"><label>ميزانية دعم شهرية (ج.م)</label><input type="number" id="rs-budget" min="0" placeholder="اختياري"></div>
+        </div>
+        <div class="form-group" style="margin-top:10px">
+          <label>أشكال الدعم التي يمكنك تقديمها *</label>
+          <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:8px" id="supportCheck">
+            <label class="check-chip"><input type="checkbox" value="financial"> 💰 دعم مالي</label>
+            <label class="check-chip"><input type="checkbox" value="consulting"> 🧑‍💼 استشارة</label>
+            <label class="check-chip"><input type="checkbox" value="emotional"> 🤗 دعم نفسي</label>
+            <label class="check-chip"><input type="checkbox" value="educational"> 📚 تعليمي</label>
+            <label class="check-chip"><input type="checkbox" value="housing"> 🏠 مساعدة سكن</label>
+          </div>
+        </div>
+        <div class="form-group"><label>نبذة عنك (اختياري)</label>
+          <textarea id="rs-bio" placeholder="اكتب جملة أو جملتين تعرّف بنفسك للأسرة التي ستدعمها..."></textarea></div>
+        <button onclick="submitSupporter()" class="submit-btn" style="max-width:220px;background:linear-gradient(135deg,#1e40af,#3b82f6)">
+          <i class="fas fa-heart"></i> انضم كداعم
+        </button>
+        <div id="rs-msg" style="margin-top:12px"></div>
+      </div>
+    </div>
+
+    <!-- ── TAB: Chat ── -->
+    <div id="tab-chat" style="display:none">
+      <div class="glass-card" style="padding:24px">
+        <h3 style="color:#1a3a2a;margin-bottom:16px"><i class="fas fa-comments" style="margin-left:8px;color:#2e7d32"></i>رسالة الدعم المباشر</h3>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+          <div class="form-group"><label>رقم الداعم</label><input type="number" id="chat-sid" placeholder="ID الداعم" min="1"></div>
+          <div class="form-group"><label>رقم الأسرة</label><input type="number" id="chat-fid" placeholder="ID الأسرة" min="1"></div>
+        </div>
+        <button onclick="loadChat()" class="submit-btn" style="max-width:160px;padding:9px 18px;background:#2e7d32;font-size:.85rem;margin-bottom:16px">
+          <i class="fas fa-search"></i> تحميل المحادثة
+        </button>
+
+        <div id="pairIndicator" style="display:none" class="pair-indicator">
+          <span id="pi-supporter">—</span>
+          <span class="pair-arrow"><i class="fas fa-arrows-left-right"></i></span>
+          <span id="pi-family">—</span>
+        </div>
+
+        <div class="chat-box" id="chatBox">
+          <div class="empty-state"><i class="fas fa-comment-slash"></i>أدخل رقم الداعم والأسرة ثم اضغط تحميل</div>
+        </div>
+
+        <div class="chat-send-row">
+          <select id="chat-sender" style="max-width:140px;font-size:.82rem">
+            <option value="supporter">داعم</option>
+            <option value="family">أسرة</option>
+            <option value="platform">المنصة</option>
+          </select>
+          <input type="text" id="chat-msg-input" placeholder="اكتب رسالتك..." onkeydown="if(event.key==='Enter')sendChatMsg()">
+          <button onclick="sendChatMsg()" style="background:#2e7d32;color:#fff;border:none;border-radius:10px;padding:0 16px;cursor:pointer;font-size:.9rem">
+            <i class="fas fa-paper-plane"></i>
+          </button>
+        </div>
+        <div id="chat-msg-status" style="margin-top:6px;font-size:.8rem"></div>
+      </div>
+    </div>
+
+  </div><!-- end container -->
+</div><!-- end main-content -->
+
+<!-- Family Detail Modal -->
+<div class="twin-modal-overlay" id="familyModal">
+  <div class="twin-modal">
+    <button class="twin-modal-close" onclick="closeModal('familyModal')"><i class="fas fa-times"></i></button>
+    <h3 id="fm-title">—</h3>
+    <div id="fm-body"></div>
+  </div>
+</div>
+
+<!-- Supporter Detail Modal -->
+<div class="twin-modal-overlay" id="supporterModal">
+  <div class="twin-modal">
+    <button class="twin-modal-close" onclick="closeModal('supporterModal')"><i class="fas fa-times"></i></button>
+    <h3 id="sm-title">—</h3>
+    <div id="sm-body"></div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+<script src="sidebar.js"></script>
+<script>
+const API = 'http://127.0.0.1:8000/api';
+
+const needLabels = {
+  food:'🍞 غذاء', education:'📚 تعليم', medical:'💊 طبي',
+  psychological:'🧠 نفسي', housing:'🏠 سكن', financial:'💰 مالي'
+};
+const supportLabels = {
+  financial:'💰 مالي', consulting:'🧑‍💼 استشارة',
+  emotional:'🤗 نفسي', educational:'📚 تعليمي', housing:'🏠 سكن'
+};
+const statusLabels = {
+  pending:'بانتظار توأم', active:'نشط', matched:'مُتوأَم', completed:'مكتمل', paused:'موقوف'
+};
+const statusClass = {
+  pending:'badge-pending', active:'badge-active', matched:'badge-matched',
+  completed:'badge-completed', paused:'badge-pending'
+};
+
+/* ── Utils ── */
+async function apiFetch(url) {
+  try {
+    const r = await fetch(API + url);
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    return await r.json();
+  } catch { return null; }
+}
+async function apiPost(url, body) {
+  try {
+    const r = await fetch(API + url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    return await r.json();
+  } catch { return { error: 'فشل الاتصال بالخادم' }; }
+}
+
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+}
+
+/* ── Tabs ── */
+function switchTab(name) {
+  document.querySelectorAll('.tab-btn').forEach((b, i) => {
+    const tabs = ['families','supporters','register-family','register-supporter','chat'];
+    b.classList.toggle('active', tabs[i] === name);
+  });
+  ['families','supporters','register-family','register-supporter','chat'].forEach(t => {
+    document.getElementById('tab-' + t).style.display = t === name ? 'block' : 'none';
+  });
+  if (name === 'families')   loadFamilies();
+  if (name === 'supporters') loadSupporters();
+}
+
+/* ── Stats ── */
+async function loadStats() {
+  const d = await apiFetch('/twin/stats');
+  if (!d) return;
+  document.getElementById('st-families').textContent  = (d.total_families   || 0).toLocaleString('ar-EG');
+  document.getElementById('st-pending').textContent   = (d.pending_families  || 0).toLocaleString('ar-EG');
+  document.getElementById('st-matched').textContent   = (d.matched_pairs     || 0).toLocaleString('ar-EG');
+  document.getElementById('st-supporters').textContent= (d.total_supporters  || 0).toLocaleString('ar-EG');
+  document.getElementById('st-messages').textContent  = (d.total_messages    || 0).toLocaleString('ar-EG');
+}
+
+/* ── Families ── */
+async function loadFamilies() {
+  const city   = document.getElementById('f-city-filter').value.trim();
+  const status = document.getElementById('f-status-filter').value;
+  let url = '/twin/families?';
+  if (city)   url += `city=${encodeURIComponent(city)}&`;
+  if (status) url += `status=${encodeURIComponent(status)}&`;
+
+  const d = await apiFetch(url);
+  const grid = document.getElementById('familiesGrid');
+
+  if (!d || !d.data || d.data.length === 0) {
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><i class="fas fa-house-crack"></i>لا توجد أسر مسجّلة حالياً</div>`;
+    return;
+  }
+
+  grid.innerHTML = d.data.map(f => `
+    <div class="twin-card" onclick="showFamily(${f.id})">
+      <div class="twin-badge ${statusClass[f.status] || 'badge-pending'}">${statusLabels[f.status] || f.status}</div>
+      <div style="font-size:1rem;font-weight:700;color:#1a3a2a;margin-bottom:4px;padding-top:22px">${f.family_head_name}</div>
+      <div style="font-size:.82rem;color:#666;margin-bottom:10px"><i class="fas fa-location-dot" style="margin-left:4px;color:#2e7d32"></i>${f.city}${f.area ? ' — '+f.area : ''}</div>
+      <div style="margin-bottom:10px">
+        ${(Array.isArray(f.needs) ? f.needs : JSON.parse(f.needs || '[]')).map(n => `<span class="need-chip">${needLabels[n] || n}</span>`).join('')}
+      </div>
+      <div style="font-size:.8rem;color:#888"><i class="fas fa-users" style="margin-left:4px"></i>${f.members_count} أفراد</div>
+      ${f.story ? `<div style="font-size:.8rem;color:#666;margin-top:8px;line-height:1.6;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${f.story}</div>` : ''}
+    </div>
+  `).join('');
+}
+
+function showFamily(id) {
+  // We already have data from the grid — navigate to chat after fetching
+  document.getElementById('tab-chat').style.display = 'none';
+  document.getElementById('chat-fid').value = id;
+  alert('تم نسخ رقم الأسرة #' + id + ' في حقل المحادثة. انتقل لتبويب "رسالة الدعم" للتواصل.');
+}
+
+/* ── Supporters ── */
+async function loadSupporters() {
+  const city = document.getElementById('s-city-filter').value.trim();
+  let url = '/twin/supporters?';
+  if (city) url += `city=${encodeURIComponent(city)}&`;
+
+  const d = await apiFetch(url);
+  const grid = document.getElementById('supportersGrid');
+
+  if (!d || !d.data || d.data.length === 0) {
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><i class="fas fa-user-slash"></i>لا يوجد داعمون مسجّلون حالياً</div>`;
+    return;
+  }
+
+  grid.innerHTML = d.data.map(s => `
+    <div class="twin-card">
+      <div class="twin-badge ${statusClass[s.status] || 'badge-active'}">${statusLabels[s.status] || s.status}</div>
+      <div style="font-size:1rem;font-weight:700;color:#1e3a5f;margin-bottom:4px;padding-top:22px">${s.name}</div>
+      <div style="font-size:.82rem;color:#666;margin-bottom:10px"><i class="fas fa-location-dot" style="margin-left:4px;color:#2563eb"></i>${s.city}</div>
+      <div style="margin-bottom:10px">
+        ${(Array.isArray(s.support_types) ? s.support_types : JSON.parse(s.support_types || '[]')).map(t => `<span class="support-chip">${supportLabels[t] || t}</span>`).join('')}
+      </div>
+      ${s.monthly_budget ? `<div style="font-size:.82rem;color:#166534;font-weight:600;margin-bottom:6px"><i class="fas fa-coins" style="margin-left:4px"></i>${parseFloat(s.monthly_budget).toLocaleString('ar-EG')} ج.م / شهر</div>` : ''}
+      ${s.bio ? `<div style="font-size:.8rem;color:#666;line-height:1.6;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${s.bio}</div>` : ''}
+    </div>
+  `).join('');
+}
+
+/* ── Register Family ── */
+async function submitFamily() {
+  const needs = [...document.querySelectorAll('#needsCheck input:checked')].map(c => c.value);
+  if (!needs.length) { alert('اختر احتياجاً واحداً على الأقل'); return; }
+  const name = document.getElementById('rf-name').value.trim();
+  const phone = document.getElementById('rf-phone').value.trim();
+  const city = document.getElementById('rf-city').value.trim();
+  const members = parseInt(document.getElementById('rf-members').value) || 1;
+  if (!name || !phone || !city) { alert('يرجى تعبئة الحقول المطلوبة'); return; }
+
+  const body = {
+    family_head_name: name,
+    phone,
+    city,
+    area: document.getElementById('rf-area').value.trim() || null,
+    members_count: members,
+    needs,
+    story: document.getElementById('rf-story').value.trim() || null,
+  };
+
+  const res = await apiPost('/twin/families', body);
+  const msg = document.getElementById('rf-msg');
+  if (res.message) {
+    msg.innerHTML = `<div class="alert-success"><i class="fas fa-check-circle"></i> ${res.message}</div>`;
+    loadStats();
+  } else {
+    const err = res.errors ? Object.values(res.errors).flat().join(' | ') : (res.error || 'حدث خطأ');
+    msg.innerHTML = `<div style="color:#dc2626;background:#fef2f2;padding:10px;border-radius:8px;font-size:.85rem"><i class="fas fa-exclamation-triangle"></i> ${err}</div>`;
+  }
+}
+
+/* ── Register Supporter ── */
+async function submitSupporter() {
+  const types = [...document.querySelectorAll('#supportCheck input:checked')].map(c => c.value);
+  if (!types.length) { alert('اختر نوع دعم واحداً على الأقل'); return; }
+  const name = document.getElementById('rs-name').value.trim();
+  const phone = document.getElementById('rs-phone').value.trim();
+  const city = document.getElementById('rs-city').value.trim();
+  if (!name || !phone || !city) { alert('يرجى تعبئة الحقول المطلوبة'); return; }
+
+  const body = {
+    name, phone, city,
+    email: document.getElementById('rs-email').value.trim() || null,
+    support_types: types,
+    monthly_budget: parseInt(document.getElementById('rs-budget').value) || 0,
+    bio: document.getElementById('rs-bio').value.trim() || null,
+  };
+
+  const res = await apiPost('/twin/supporters', body);
+  const msg = document.getElementById('rs-msg');
+  if (res.message) {
+    let html = `<div class="alert-success"><i class="fas fa-check-circle"></i> ${res.message}</div>`;
+    if (res.matched_to) {
+      html += `<div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:14px;margin-top:10px">
+        <div style="font-weight:700;color:#166534;margin-bottom:4px"><i class="fas fa-people-arrows" style="margin-left:6px"></i>تم الإيجاد!</div>
+        <div style="font-size:.88rem;color:#166534">توأمة مع أسرة: <b>${res.matched_to}</b> في ${res.family_city}</div>
+      </div>`;
+    }
+    msg.innerHTML = html;
+    loadStats();
+  } else {
+    const err = res.errors ? Object.values(res.errors).flat().join(' | ') : (res.error || 'حدث خطأ');
+    msg.innerHTML = `<div style="color:#dc2626;background:#fef2f2;padding:10px;border-radius:8px;font-size:.85rem"><i class="fas fa-exclamation-triangle"></i> ${err}</div>`;
+  }
+}
+
+/* ── Chat ── */
+let currentSid = null, currentFid = null;
+
+async function loadChat() {
+  currentSid = parseInt(document.getElementById('chat-sid').value);
+  currentFid = parseInt(document.getElementById('chat-fid').value);
+  if (!currentSid || !currentFid) { alert('أدخل رقم الداعم والأسرة'); return; }
+
+  const msgs = await apiFetch(`/twin/messages/${currentSid}/${currentFid}`);
+  renderChat(msgs || []);
+
+  document.getElementById('pairIndicator').style.display = 'flex';
+  document.getElementById('pi-supporter').textContent = 'داعم #' + currentSid;
+  document.getElementById('pi-family').textContent    = 'أسرة #' + currentFid;
+}
+
+function renderChat(msgs) {
+  const box = document.getElementById('chatBox');
+  if (!msgs.length) {
+    box.innerHTML = `<div class="empty-state"><i class="fas fa-comment-dots"></i>لا توجد رسائل بعد. ابدأ المحادثة!</div>`;
+    return;
+  }
+  box.innerHTML = msgs.map(m => {
+    const cls = `bubble-${m.sender_type}`;
+    const who = m.sender_type === 'supporter' ? '👤 الداعم' : m.sender_type === 'family' ? '👨‍👩‍👧 الأسرة' : '🌿 المنصة';
+    const time = new Date(m.created_at).toLocaleTimeString('ar-EG', {hour:'2-digit',minute:'2-digit'});
+    return `<div class="chat-bubble ${cls}"><div style="font-size:.7rem;opacity:.7;margin-bottom:3px">${who} · ${time}</div>${m.message}</div>`;
+  }).join('');
+  box.scrollTop = box.scrollHeight;
+}
+
+async function sendChatMsg() {
+  if (!currentSid || !currentFid) { alert('حمّل المحادثة أولاً'); return; }
+  const message = document.getElementById('chat-msg-input').value.trim();
+  if (!message) return;
+  const sender_type = document.getElementById('chat-sender').value;
+
+  const res = await apiPost('/twin/messages', {
+    supporter_id: currentSid,
+    family_id:    currentFid,
+    sender_type,
+    message,
+  });
+
+  const status = document.getElementById('chat-msg-status');
+  if (res.id) {
+    document.getElementById('chat-msg-input').value = '';
+    status.textContent = '';
+    loadChat();
+  } else {
+    status.textContent = res.error || 'فشل الإرسال';
+    status.style.color = '#dc2626';
+  }
+}
+
+/* ── Seed demo data if empty ── */
+async function seedIfEmpty() {
+  const d = await apiFetch('/twin/stats');
+  if (d && d.total_families === 0) {
+    // Seed a demo family
+    await apiPost('/twin/families', {
+      family_head_name: 'أم علي الصعيدي',
+      phone: '01011111111',
+      city: 'سوهاج',
+      area: 'المراغة',
+      members_count: 6,
+      needs: ['food','education','medical'],
+      story: 'أسرة من 6 أفراد فقدت معيلها منذ عامين، الأطفال في سن التعليم وتحتاج دعماً مستمراً.',
+    });
+    await apiPost('/twin/families', {
+      family_head_name: 'أبو محمد الغريب',
+      phone: '01022222222',
+      city: 'القاهرة',
+      area: 'عين شمس',
+      members_count: 4,
+      needs: ['financial','psychological'],
+      story: 'أسرة تعاني من ضائقة مالية إثر تعرض رب الأسرة لحادث.',
+    });
+    // Seed a supporter — will auto-match
+    await apiPost('/twin/supporters', {
+      name: 'محمد حسن التاجر',
+      phone: '01033333333',
+      email: 'mhassan@demo.com',
+      city: 'القاهرة',
+      support_types: ['financial','consulting'],
+      monthly_budget: 2000,
+      bio: 'رجل أعمال يرغب في دعم أسرة كريمة بشكل شهري منتظم.',
+    });
+    loadStats();
+    loadFamilies();
+  }
+}
+
+/* ── Init ── */
+document.addEventListener('DOMContentLoaded', async () => {
+  document.getElementById('loading').style.display = 'none';
+  await loadStats();
+  await loadFamilies();
+  await seedIfEmpty();
+});
+</script>
+</body>
+</html>
