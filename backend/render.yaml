@@ -3,8 +3,12 @@ services:
   - type: web
     name: humanitarian-backend
     runtime: docker
+    rootDir: backend
     dockerfilePath: ./Dockerfile
     plan: free
+    buildFilter:
+      paths:
+        - backend/**
     envVars:
       - key: APP_ENV
         value: production
