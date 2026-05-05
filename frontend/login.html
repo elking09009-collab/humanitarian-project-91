@@ -32,6 +32,25 @@
   <button id="fillAdminBtn" type="button" style="margin-top:8px;">تعبئة بيانات الأدمن تلقائيًا</button>
 </div>
 
+<div id="demoBox" style="display:none;margin-top:14px;padding:14px;border:2px solid #f59e0b;border-radius:10px;background:#fffbeb;text-align:center;">
+  <p style="font-size:0.87rem;color:#92400e;margin-bottom:10px;">
+    <strong>⚠️ الخادم غير متاح حالياً</strong><br>
+    يمكنك تجربة لوحة التحكم بالوضع التجريبي
+  </p>
+  <button id="demoLoginBtn" type="button"
+    style="background:#f59e0b;color:#000;border:none;padding:10px 22px;border-radius:8px;font-size:0.9rem;font-weight:700;cursor:pointer;width:100%;">
+    🎭 دخول كأدمن (عرض تجريبي)
+  </button>
+</div>
+
+<script>
+document.getElementById("demoLoginBtn")?.addEventListener("click", function() {
+  localStorage.setItem("user", JSON.stringify({ name: "Admin", email: "admin@humanitarian.local", role: "admin" }));
+  localStorage.setItem("authToken", "demo-token");
+  window.location.href = "admin-demo.html";
+});
+</script>
+
 <p style="text-align:center;margin-top:16px;">
   ليس لديك حساب؟ <a href="register.html">أنشئ حساباً</a>
 </p>

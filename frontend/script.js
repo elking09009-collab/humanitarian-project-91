@@ -273,7 +273,14 @@ if (loginForm) {
                 window.location.href = "index.html";
             }
         } catch (error) {
-            alert(error.message || "فشل تسجيل الدخول");
+            const demoBox = document.getElementById("demoBox");
+            // إذا كان الخطأ بسبب عدم وصول الـ backend، أظهر زرار الوضع التجريبي
+            if (demoBox && (error.message === "Failed to fetch" || error.message.includes("fetch") || error.message.includes("الاتصال"))) {
+                demoBox.style.display = "block";
+                alert("تعذّر الاتصال بالخادم.\nيمكنك تجربة لوحة التحكم بالوضع التجريبي أدناه.");
+            } else {
+                alert(error.message || "فشل تسجيل الدخول");
+            }
         } finally {
             submitButton.disabled = false;
             submitButton.textContent = "دخول";
