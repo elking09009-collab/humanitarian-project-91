@@ -1,4 +1,4 @@
-const API_BASE_URL = localStorage.getItem("apiBaseUrl") || "http://127.0.0.1:8000/api";
+const API_BASE_URL = localStorage.getItem("apiBaseUrl") || "https://humanitarian-backend.onrender.com/api";
 
 function getAdminPanelUrl() {
     return API_BASE_URL.replace(/\/api\/?$/, "") + "/admin";
