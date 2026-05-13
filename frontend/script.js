@@ -1,4 +1,14 @@
-const API_BASE_URL = localStorage.getItem("apiBaseUrl") || "https://humanitarian-backend.onrender.com/api";
+const API_BASE_URL = (() => {
+    const savedUrl = localStorage.getItem("apiBaseUrl");
+    if (savedUrl) {
+        return savedUrl;
+    }
+
+    const isLocalRuntime = ["localhost", "127.0.0.1", ""].includes(window.location.hostname) || window.location.protocol === "file:";
+    return isLocalRuntime ? "http://127.0.0.1:8000/api" : "https://humanitarian-backend.onrender.com/api";
+})();
+
+window.API_BASE_URL = API_BASE_URL;
 
 function getAdminPanelUrl() {
     return API_BASE_URL.replace(/\/api\/?$/, "") + "/admin";

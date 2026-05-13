@@ -905,6 +905,22 @@ font-weight:bold;
   align-items: center;
 height: 100vh;
 }
+
+.request-page {
+  min-height: 100vh;
+}
+
+.request-page .main-content {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 90px 20px 40px;
+}
+
+.request-page .form-container {
+  width: min(620px, calc(100vw - 40px));
+}
 label {
   color: #2e7d32;
 }
