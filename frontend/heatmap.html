@@ -144,6 +144,12 @@ function setStats(data) {
 }
 
 async function loadHeatmap() {
+  // Clear old markers
+  allMarkers.forEach(({marker}) => {
+    if (window._leafletMap) window._leafletMap.removeLayer(marker);
+  });
+  allMarkers = [];
+
   // Always initialize map first so tiles always show
   const map = L.map('heat-map').setView([29.0, 30.5], 6);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
