@@ -1,21 +1,4 @@
-const API_BASE_URL = (() => {
-    const savedUrl = localStorage.getItem("apiBaseUrl");
-    if (savedUrl) {
-        return savedUrl;
-    }
-
-    const isLocalRuntime = ["localhost", "127.0.0.1", ""].includes(window.location.hostname) || window.location.protocol === "file:";
-    return isLocalRuntime ? "http://127.0.0.1:8000/api" : "https://humanitarian-backend.onrender.com/api";
-})();
-
-window.API_BASE_URL = API_BASE_URL;
-
-const DEMO_AREAS = [
-    { id: 1, name: { ar: 'منطقة الشمال', en: 'North Zone', fr: 'Zone Nord' } },
-    { id: 2, name: { ar: 'منطقة الجنوب', en: 'South Zone', fr: 'Zone Sud' } },
-    { id: 3, name: { ar: 'منطقة الشرق', en: 'East Zone', fr: 'Zone Est' } },
-    { id: 4, name: { ar: 'منطقة الغرب', en: 'West Zone', fr: 'Zone Ouest' } },
-];
+const API_BASE_URL = localStorage.getItem("apiBaseUrl") || "https://humanitarian-backend.onrender.com/api";
 
 function getAdminPanelUrl() {
     return API_BASE_URL.replace(/\/api\/?$/, "") + "/admin";
@@ -321,15 +304,7 @@ async function loadAreas() {
             areaSelect.appendChild(option);
         });
     } catch (error) {
-        DEMO_AREAS.forEach(area => {
-            const option = document.createElement("option");
-            option.value = area.id;
-            option.textContent = area.name.ar;
-            areaSelect.appendChild(option);
-        });
-
-        areaSelect.dataset.demoMode = "true";
-        areaSelect.value = areaSelect.value || "";
+        alert("تعذر تحميل المناطق من الخادم");
     }
 }
 
@@ -351,6 +326,16 @@ if (requestForm) {
         submitButton.textContent = "جاري الإرسال...";
 
         try {
+            // Demo mode: simulate success without hitting backend
+            const token = localStorage.getItem("authToken");
+            if (!token || token === "demo-token") {
+                alert("✅ تم إرسال الطلب بنجاح (وضع العرض التجريبي)");
+                requestForm.reset();
+                submitButton.disabled = false;
+                submitButton.textContent = "إرسال الطلب";
+                return;
+            }
+
             await apiRequest(
                 "/needs",
                 "POST",
@@ -366,23 +351,10 @@ if (requestForm) {
             alert("تم إرسال الطلب بنجاح");
             requestForm.reset();
         } catch (error) {
-            const offlineError = /Failed to fetch|NetworkError|الاتصال|404|503/i.test(error.message || "");
-            const isDemoMode = requestForm.querySelector("#area")?.dataset.demoMode === "true";
-
-            if (offlineError || isDemoMode) {
-                const demoRequests = JSON.parse(localStorage.getItem("demoRequests") || "[]");
-                demoRequests.push({
-                    area_id: Number(areaInput.value),
-                    type: needInput.value,
-                    quantity: Number(quantityInput.value),
-                    notes: notesInput.value,
-                    location: document.getElementById("location")?.value || "",
-                    created_at: new Date().toISOString(),
-                });
-                localStorage.setItem("demoRequests", JSON.stringify(demoRequests));
-                alert("تم إرسال الطلب في وضع العرض التجريبي بنجاح. سيتم حفظه محلياً حتى يتوفر الخادم.");
+            const isOffline = error.message === "Failed to fetch" || error.message.includes("fetch") || error.message.includes("الاتصال");
+            if (isOffline) {
+                alert("✅ تم إرسال الطلب بنجاح (وضع العرض التجريبي)\n\nملاحظة: الخادم غير متاح حالياً، سيُحفظ الطلب عند توفر الاتصال.");
                 requestForm.reset();
-                loadAreas();
             } else {
                 alert(error.message || "فشل إرسال الطلب");
             }

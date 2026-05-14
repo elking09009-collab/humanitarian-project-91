@@ -8,6 +8,14 @@
 <link rel="stylesheet" href="sidebar.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+.icon-wrap {
+  width:56px; height:56px; border-radius:16px;
+  background:linear-gradient(135deg,#e8f5e9,#c8e6c9);
+  display:flex; align-items:center; justify-content:center;
+  margin:0 auto 14px; font-size:1.5rem; color:#2e7d32;
+}
+</style>
 </head>
 <body>
 <div id="loading"><div class="loader"></div></div>
@@ -32,7 +40,7 @@
       <p>زر الأسرة المحتاجة، صوّر الأوراق الرسمية والأدلة، واكتب ملاحظاتك الميدانية</p>
     </div>
     <div class="glass-card feature-card">
-      <div class="icon-wrap"><i class="fas fa-shield-check"></i></div>
+      <div class="icon-wrap"><i class="fas fa-shield-halved"></i></div>
       <h3>٣. موافقة الإدارة</h3>
       <p>يراجع فريق الإدارة التوثيق ويعتمده، فتُعلَّم الحالة "موثّقة" وتصل المساعدة بأمان</p>
     </div>
@@ -40,7 +48,7 @@
 
   <!-- Approved validations list -->
   <div style="max-width:900px;margin:0 auto;padding:30px 30px">
-    <h2 style="color:#2e7d32;margin-bottom:20px"><i class="fas fa-circle-check"></i> الحالات الموثّقة</h2>
+    <h2 style="color:#2e7d32;margin-bottom:20px"><i class="fas fa-badge-check"></i> الحالات الموثّقة</h2>
     <div id="validationsList" style="display:flex;flex-direction:column;gap:16px">
       <p style="color:#aaa;text-align:center;padding:40px">جارٍ التحميل...</p>
     </div>
@@ -77,18 +85,12 @@
 async function loadValidations() {
   const list = document.getElementById('validationsList');
   try {
-    const data = await apiRequest('/volunteer-validations').catch(() => null);
-    const demoData = [
-      { need_id: 11, field_notes: 'زيارة ميدانية لعائلة تحتاج دعماً غذائياً وطبيعياً.', created_at: '2026-05-12', volunteer: 'أحمد' },
-      { need_id: 18, field_notes: 'تم توثيق الحالة بالصور والمستندات الرسمية.', created_at: '2026-05-11', volunteer: 'سارة' },
-    ];
-    const rows = Array.isArray(data) && data.length ? data : demoData;
-
-    if (!data || !data.length) {
-      list.innerHTML = '<p style="color:#92400e;text-align:center;padding:12px 0 8px">عرض بيانات تجريبية لعدم توفر الخادم حالياً</p>';
+    const data = await apiRequest('/volunteer-validations');
+    if (!data.length) {
+      list.innerHTML = '<p style="color:#aaa;text-align:center;padding:40px">لا توجد حالات موثّقة بعد</p>';
+      return;
     }
-
-    list.innerHTML += rows.map(v => `
+    list.innerHTML = data.map(v => `
       <div class="glass-card validation-card">
         <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px">
           <div>
@@ -124,21 +126,7 @@ async function submitValidation() {
     document.getElementById('valNotes').value='';
     document.getElementById('valDocs').value='';
     loadValidations();
-  } catch(e) {
-    const offlineError = /Failed to fetch|NetworkError|الاتصال|404|503/i.test(e.message || '');
-    if (offlineError) {
-      const demoValidations = JSON.parse(localStorage.getItem('demoValidations') || '[]');
-      demoValidations.push({ need_id: parseInt(needId), field_notes: notes, document_urls: docs, created_at: new Date().toISOString().slice(0,10), volunteer: 'عرض تجريبي' });
-      localStorage.setItem('demoValidations', JSON.stringify(demoValidations));
-      document.getElementById('valSuccess').style.display='block';
-      document.getElementById('valNeedId').value='';
-      document.getElementById('valNotes').value='';
-      document.getElementById('valDocs').value='';
-      loadValidations();
-      return;
-    }
-    alert('خطأ: ' + e.message);
-  }
+  } catch(e) { alert('خطأ: ' + e.message); }
 }
 
 document.addEventListener('DOMContentLoaded', loadValidations);

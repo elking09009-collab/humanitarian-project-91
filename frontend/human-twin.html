@@ -298,7 +298,7 @@
 <script src="script.js"></script>
 <script src="sidebar.js"></script>
 <script>
-const API = window.API_BASE_URL || 'https://humanitarian-backend.onrender.com/api';
+const API = (typeof API_BASE_URL !== 'undefined') ? API_BASE_URL : 'https://humanitarian-backend.onrender.com/api';
 
 const needLabels = {
   food:'🍞 غذاء', education:'📚 تعليم', medical:'💊 طبي',

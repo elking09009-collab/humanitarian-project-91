@@ -11,13 +11,6 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <style>
 .map-wrap { max-width:1100px; margin:0 auto; padding:30px 30px 60px; }
-.map-toolbar { display:flex; gap:12px; flex-wrap:wrap; margin-bottom:16px; align-items:center; }
-.map-search {
-  flex:1; min-width:240px; padding:12px 16px; border-radius:14px; border:1px solid rgba(46,125,50,.2);
-  background:rgba(255,255,255,.95); font-family:'Poppins',sans-serif; font-size:.92rem;
-  outline:none; box-shadow:0 4px 18px rgba(0,0,0,.04);
-}
-.map-search:focus { border-color:#2e7d32; box-shadow:0 0 0 3px rgba(46,125,50,.12); }
 .map-stats { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:16px; margin-bottom:28px; }
 .map-stat-card {
   background:rgba(255,255,255,.85); backdrop-filter:blur(12px);
@@ -38,15 +31,6 @@
   border:1px solid rgba(46,125,50,.2); border-radius:16px; padding:20px;
   margin-top:18px; box-shadow:0 4px 24px rgba(0,0,0,.08);
 }
-#heat-map {
-  height: 560px;
-  min-height: 460px;
-  border-radius: 18px;
-  border: 1px solid rgba(46,125,50,.15);
-  box-shadow: 0 10px 28px rgba(0,0,0,.08);
-  overflow: hidden;
-  background: #eef2f7;
-}
 .info-panel.show { display:block; }
 .info-panel h3 { color:#2e7d32; margin-bottom:10px; }
 .need-bars { display:flex; flex-direction:column; gap:8px; margin-top:12px; }
@@ -54,6 +38,13 @@
 .need-bar-row .lbl { min-width:80px; color:#555; }
 .need-bar-fill { flex:1; background:#e5e7eb; border-radius:99px; height:8px; overflow:hidden; }
 .need-bar-fill div { height:100%; border-radius:99px; background:linear-gradient(90deg,#2e7d32,#4ade80); transition:width .6s; }
+#heat-map { height:460px; border-radius:16px; margin-bottom:18px; z-index:0; border:2px solid rgba(46,125,50,.15); }
+.search-map-row { display:flex; gap:10px; margin-bottom:14px; align-items:center; }
+.search-map-row input {
+  flex:1; padding:9px 16px; border-radius:99px; border:1.5px solid rgba(46,125,50,.25);
+  font-family:'Poppins',sans-serif; font-size:.88rem; outline:none;
+}
+.search-map-row input:focus { border-color:#2e7d32; }
 </style>
 </head>
 <body>
@@ -75,8 +66,10 @@
       <div class="map-stat-card"><div class="val" id="statPending">—</div><div class="lbl">احتياج معلّق</div></div>
     </div>
 
-    <div class="map-toolbar">
-      <input id="mapSearch" class="map-search" type="search" placeholder="ابحث باسم المنطقة..." oninput="applyHeatmapFilters()">
+    <!-- Search -->
+    <div class="search-map-row">
+      <i class="fas fa-search" style="color:#2e7d32"></i>
+      <input type="text" id="mapSearch" placeholder="ابحث عن منطقة..." oninput="searchMap(this.value)">
     </div>
 
     <!-- Filters -->
@@ -114,15 +107,6 @@
 <script>
 let allMarkers = [];
 let heatData   = [];
-let activePriorityFilter = 'all';
-let activeSearchTerm = '';
-
-const demoHeatmapData = () => ([
-  { area_id: 1, lat: 30.0626, lng: 31.2497, area_name: 'منطقة الشمال', priority: 'critical', needs_count: 18, pending_count: 9, total_quantity: 420, intensity: 1.0 },
-  { area_id: 2, lat: 29.9737, lng: 32.5311, area_name: 'منطقة الجنوب', priority: 'high', needs_count: 12, pending_count: 5, total_quantity: 260, intensity: 0.7 },
-  { area_id: 3, lat: 31.2156, lng: 29.9553, area_name: 'منطقة الشرق', priority: 'medium', needs_count: 9, pending_count: 3, total_quantity: 180, intensity: 0.4 },
-  { area_id: 4, lat: 30.0444, lng: 31.2357, area_name: 'منطقة الغرب', priority: 'high', needs_count: 10, pending_count: 4, total_quantity: 220, intensity: 0.7 },
-]);
 
 async function loadHeatmap() {
   try {
@@ -132,16 +116,8 @@ async function loadHeatmap() {
     }).addTo(map);
 
     // Load heatmap data
-    const apiData = await apiRequest('/heatmap').catch(() => null);
-    const data = Array.isArray(apiData) && apiData.length ? apiData : demoHeatmapData();
+    const data = await apiRequest('/heatmap');
     heatData = data;
-
-    if (!apiData || !apiData.length) {
-      const searchNote = document.createElement('div');
-      searchNote.style.cssText = 'margin:10px 0 0;color:#92400e;font-size:.82rem;background:#fffbeb;border:1px solid #f59e0b;padding:10px 14px;border-radius:12px;';
-      searchNote.innerHTML = '<i class="fas fa-circle-info" style="margin-left:6px"></i>تم عرض بيانات تجريبية لأن الخادم غير متاح حالياً.';
-      document.querySelector('.map-toolbar')?.insertAdjacentElement('afterend', searchNote);
-    }
 
     // Stats
     document.getElementById('statAreas').textContent    = data.length;
@@ -192,30 +168,67 @@ async function loadHeatmap() {
 
     window._leafletMap = map;
   } catch(e) {
-    document.getElementById('heat-map').innerHTML='<p style="padding:60px;text-align:center;color:#9ca3af">تعذر تحميل بيانات الخريطة — تأكد من تشغيل السيرفر</p>';
+    // Demo fallback data when backend is offline
+    const demoData = [
+      {area_name:'منطقة الشمال', lat:30.06, lng:31.24, priority:'high',     needs_count:16, pending_count:8,  total_quantity:420, intensity:.7},
+      {area_name:'منطقة الجنوب', lat:29.97, lng:32.53, priority:'critical', needs_count:12, pending_count:10, total_quantity:310, intensity:.9},
+      {area_name:'منطقة الشرق',  lat:30.58, lng:32.26, priority:'medium',   needs_count:9,  pending_count:3,  total_quantity:180, intensity:.4},
+      {area_name:'منطقة الغرب',  lat:29.30, lng:30.85, priority:'high',     needs_count:10, pending_count:6,  total_quantity:260, intensity:.65},
+      {area_name:'منطقة الوسط',  lat:27.18, lng:31.19, priority:'medium',   needs_count:7,  pending_count:2,  total_quantity:140, intensity:.35},
+    ];
+    heatData = demoData;
+    document.getElementById('statAreas').textContent    = demoData.length;
+    document.getElementById('statNeeds').textContent    = demoData.reduce((s,d)=>s+d.needs_count,0);
+    document.getElementById('statCritical').textContent = demoData.filter(d=>d.priority==='critical').length;
+    document.getElementById('statPending').textContent  = demoData.reduce((s,d)=>s+d.pending_count,0);
+
+    const map = L.map('heat-map').setView([29.5,31.0],6);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap'}).addTo(map);
+    window._leafletMap = map;
+
+    demoData.forEach(area => {
+      const color = area.priority==='critical'?'#ef4444':area.priority==='high'?'#f97316':area.priority==='medium'?'#eab308':'#22c55e';
+      const radius = 14 + area.needs_count * 3;
+      const pulseIcon = L.divIcon({
+        className:'',
+        html:`<div style="width:${radius*2}px;height:${radius*2}px;border-radius:50%;background:${color}30;border:3px solid ${color};display:flex;align-items:center;justify-content:center;animation:ripple-map 2s infinite;"><div style="width:${radius}px;height:${radius}px;border-radius:50%;background:${color};opacity:.85"></div></div>`,
+        iconSize:[radius*2,radius*2], iconAnchor:[radius,radius],
+      });
+      const m = L.marker([area.lat,area.lng],{icon:pulseIcon}).addTo(map);
+      m._areaData = area;
+      m.bindTooltip(`<div dir="rtl"><strong>${area.area_name}</strong><br>الاحتياجات: ${area.needs_count} | معلّق: ${area.pending_count}</div>`,{direction:'top'});
+      m.on('click',()=>showInfoPanel(area));
+      allMarkers.push({marker:m, priority:area.priority});
+    });
+    const bounds = L.latLngBounds(demoData.map(d=>[d.lat,d.lng]));
+    map.fitBounds(bounds,{padding:[40,40]});
   }
 }
 
 function filterMap(priority, btn) {
-  activePriorityFilter = priority;
   document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
-  applyHeatmapFilters();
+  const searchVal = (document.getElementById('mapSearch')?.value||'').trim().toLowerCase();
+  allMarkers.forEach(({marker,priority:p})=>{
+    const nameMatch = !searchVal || (marker._areaData?.area_name||'').toLowerCase().includes(searchVal);
+    const priMatch  = priority==='all'||p===priority;
+    if (nameMatch && priMatch) {
+      if (!window._leafletMap.hasLayer(marker)) window._leafletMap.addLayer(marker);
+    } else {
+      window._leafletMap.removeLayer(marker);
+    }
+  });
 }
 
-function applyHeatmapFilters() {
-  if (!window._leafletMap) return;
-
-  activeSearchTerm = (document.getElementById('mapSearch')?.value || '').trim().toLowerCase();
+function searchMap(val) {
+  const lv = val.toLowerCase();
+  const activePri = document.querySelector('.filter-btn.active')?.dataset.filter || 'all';
   allMarkers.forEach(({marker,priority:p})=>{
-    const areaName = (marker._areaData?.area_name || '').toString().toLowerCase();
-    const matchesPriority = activePriorityFilter === 'all' || p === activePriorityFilter;
-    const matchesSearch = !activeSearchTerm || areaName.includes(activeSearchTerm);
-    const shouldShow = matchesPriority && matchesSearch;
-
-    if (shouldShow) {
+    const nameMatch = !lv || (marker._areaData?.area_name||'').toLowerCase().includes(lv);
+    const priMatch  = activePri==='all'||p===activePri;
+    if (nameMatch && priMatch) {
       if (!window._leafletMap.hasLayer(marker)) window._leafletMap.addLayer(marker);
-    } else if (window._leafletMap.hasLayer(marker)) {
+    } else {
       window._leafletMap.removeLayer(marker);
     }
   });
