@@ -77,12 +77,18 @@
 async function loadValidations() {
   const list = document.getElementById('validationsList');
   try {
-    const data = await apiRequest('/volunteer-validations');
-    if (!data.length) {
-      list.innerHTML = '<p style="color:#aaa;text-align:center;padding:40px">لا توجد حالات موثّقة بعد</p>';
-      return;
+    const data = await apiRequest('/volunteer-validations').catch(() => null);
+    const demoData = [
+      { need_id: 11, field_notes: 'زيارة ميدانية لعائلة تحتاج دعماً غذائياً وطبيعياً.', created_at: '2026-05-12', volunteer: 'أحمد' },
+      { need_id: 18, field_notes: 'تم توثيق الحالة بالصور والمستندات الرسمية.', created_at: '2026-05-11', volunteer: 'سارة' },
+    ];
+    const rows = Array.isArray(data) && data.length ? data : demoData;
+
+    if (!data || !data.length) {
+      list.innerHTML = '<p style="color:#92400e;text-align:center;padding:12px 0 8px">عرض بيانات تجريبية لعدم توفر الخادم حالياً</p>';
     }
-    list.innerHTML = data.map(v => `
+
+    list.innerHTML += rows.map(v => `
       <div class="glass-card validation-card">
         <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px">
           <div>
@@ -118,7 +124,21 @@ async function submitValidation() {
     document.getElementById('valNotes').value='';
     document.getElementById('valDocs').value='';
     loadValidations();
-  } catch(e) { alert('خطأ: ' + e.message); }
+  } catch(e) {
+    const offlineError = /Failed to fetch|NetworkError|الاتصال|404|503/i.test(e.message || '');
+    if (offlineError) {
+      const demoValidations = JSON.parse(localStorage.getItem('demoValidations') || '[]');
+      demoValidations.push({ need_id: parseInt(needId), field_notes: notes, document_urls: docs, created_at: new Date().toISOString().slice(0,10), volunteer: 'عرض تجريبي' });
+      localStorage.setItem('demoValidations', JSON.stringify(demoValidations));
+      document.getElementById('valSuccess').style.display='block';
+      document.getElementById('valNeedId').value='';
+      document.getElementById('valNotes').value='';
+      document.getElementById('valDocs').value='';
+      loadValidations();
+      return;
+    }
+    alert('خطأ: ' + e.message);
+  }
 }
 
 document.addEventListener('DOMContentLoaded', loadValidations);

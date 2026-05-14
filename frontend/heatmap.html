@@ -117,6 +117,13 @@ let heatData   = [];
 let activePriorityFilter = 'all';
 let activeSearchTerm = '';
 
+const demoHeatmapData = () => ([
+  { area_id: 1, lat: 30.0626, lng: 31.2497, area_name: 'منطقة الشمال', priority: 'critical', needs_count: 18, pending_count: 9, total_quantity: 420, intensity: 1.0 },
+  { area_id: 2, lat: 29.9737, lng: 32.5311, area_name: 'منطقة الجنوب', priority: 'high', needs_count: 12, pending_count: 5, total_quantity: 260, intensity: 0.7 },
+  { area_id: 3, lat: 31.2156, lng: 29.9553, area_name: 'منطقة الشرق', priority: 'medium', needs_count: 9, pending_count: 3, total_quantity: 180, intensity: 0.4 },
+  { area_id: 4, lat: 30.0444, lng: 31.2357, area_name: 'منطقة الغرب', priority: 'high', needs_count: 10, pending_count: 4, total_quantity: 220, intensity: 0.7 },
+]);
+
 async function loadHeatmap() {
   try {
     const map = L.map('heat-map').setView([27.0, 30.5], 6);
@@ -125,8 +132,16 @@ async function loadHeatmap() {
     }).addTo(map);
 
     // Load heatmap data
-    const data = await apiRequest('/heatmap');
+    const apiData = await apiRequest('/heatmap').catch(() => null);
+    const data = Array.isArray(apiData) && apiData.length ? apiData : demoHeatmapData();
     heatData = data;
+
+    if (!apiData || !apiData.length) {
+      const searchNote = document.createElement('div');
+      searchNote.style.cssText = 'margin:10px 0 0;color:#92400e;font-size:.82rem;background:#fffbeb;border:1px solid #f59e0b;padding:10px 14px;border-radius:12px;';
+      searchNote.innerHTML = '<i class="fas fa-circle-info" style="margin-left:6px"></i>تم عرض بيانات تجريبية لأن الخادم غير متاح حالياً.';
+      document.querySelector('.map-toolbar')?.insertAdjacentElement('afterend', searchNote);
+    }
 
     // Stats
     document.getElementById('statAreas').textContent    = data.length;
