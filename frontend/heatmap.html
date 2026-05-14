@@ -108,101 +108,59 @@
 let allMarkers = [];
 let heatData   = [];
 
+const DEMO_AREAS = [
+  {area_name:'منطقة الشمال', lat:30.06, lng:31.24, priority:'high',     needs_count:16, pending_count:8,  total_quantity:420, intensity:.7},
+  {area_name:'منطقة الجنوب', lat:29.97, lng:32.53, priority:'critical', needs_count:12, pending_count:10, total_quantity:310, intensity:.9},
+  {area_name:'منطقة الشرق',  lat:30.58, lng:32.26, priority:'medium',   needs_count:9,  pending_count:3,  total_quantity:180, intensity:.4},
+  {area_name:'منطقة الغرب',  lat:29.30, lng:30.85, priority:'high',     needs_count:10, pending_count:6,  total_quantity:260, intensity:.65},
+  {area_name:'منطقة الوسط',  lat:27.18, lng:31.19, priority:'medium',   needs_count:7,  pending_count:2,  total_quantity:140, intensity:.35},
+];
+
+function addMarkers(map, data) {
+  data.forEach(area => {
+    const color  = area.priority==='critical'?'#ef4444':area.priority==='high'?'#f97316':area.priority==='medium'?'#eab308':'#22c55e';
+    const radius = 14 + area.needs_count * 3;
+    const pulseIcon = L.divIcon({
+      className:'',
+      html:`<div style="width:${radius*2}px;height:${radius*2}px;border-radius:50%;background:${color}30;border:3px solid ${color};display:flex;align-items:center;justify-content:center;animation:ripple-map 2s infinite;">
+              <div style="width:${radius}px;height:${radius}px;border-radius:50%;background:${color};opacity:.85"></div>
+            </div>`,
+      iconSize:[radius*2,radius*2], iconAnchor:[radius,radius],
+    });
+    const m = L.marker([area.lat,area.lng],{icon:pulseIcon}).addTo(map);
+    m._areaData = area;
+    m.bindTooltip(`<div dir="rtl" style="font-family:Poppins,sans-serif"><strong>${area.area_name}</strong><br>الاحتياجات: ${area.needs_count} | معلّق: ${area.pending_count}</div>`,{direction:'top'});
+    m.on('click',()=>showInfoPanel(area));
+    allMarkers.push({marker:m, priority:area.priority});
+  });
+  if (data.length) map.fitBounds(L.latLngBounds(data.map(d=>[d.lat,d.lng])),{padding:[40,40]});
+}
+
+function setStats(data) {
+  document.getElementById('statAreas').textContent    = data.length;
+  document.getElementById('statNeeds').textContent    = data.reduce((s,d)=>s+d.needs_count,0);
+  document.getElementById('statCritical').textContent = data.filter(d=>d.priority==='critical').length;
+  document.getElementById('statPending').textContent  = data.reduce((s,d)=>s+d.pending_count,0);
+}
+
 async function loadHeatmap() {
+  // Always initialize map first so tiles always show
+  const map = L.map('heat-map').setView([29.0, 30.5], 6);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+    attribution:'© OpenStreetMap contributors'
+  }).addTo(map);
+  window._leafletMap = map;
+
+  // Load real data; fall back to demo silently
+  let data = DEMO_AREAS;
   try {
-    const map = L.map('heat-map').setView([27.0, 30.5], 6);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
-      attribution:'© OpenStreetMap'
-    }).addTo(map);
+    const res = await apiRequest('/heatmap');
+    if (Array.isArray(res) && res.length) data = res;
+  } catch(_) { /* backend offline — use demo data */ }
 
-    // Load heatmap data
-    const data = await apiRequest('/heatmap');
-    heatData = data;
-
-    // Stats
-    document.getElementById('statAreas').textContent    = data.length;
-    document.getElementById('statNeeds').textContent    = data.reduce((s,d)=>s+d.needs_count,0);
-    document.getElementById('statCritical').textContent = data.filter(d=>d.priority==='critical').length;
-    document.getElementById('statPending').textContent  = data.reduce((s,d)=>s+d.pending_count,0);
-
-    // Markers
-    data.forEach(area => {
-      const color = area.priority==='critical'?'#ef4444':area.priority==='high'?'#f97316':area.priority==='medium'?'#eab308':'#22c55e';
-      const radius = 14 + area.needs_count * 3;
-
-      // Pulse circle
-      const pulseIcon = L.divIcon({
-        className:'',
-        html:`<div style="
-          width:${radius*2}px;height:${radius*2}px;border-radius:50%;
-          background:${color}30;border:3px solid ${color};
-          display:flex;align-items:center;justify-content:center;
-          box-shadow:0 0 0 0 ${color}60;
-          animation:ripple-map 2s infinite;
-          position:relative;
-        ">
-          <div style="width:${radius}px;height:${radius}px;border-radius:50%;background:${color};opacity:.85"></div>
-        </div>`,
-        iconSize:[radius*2,radius*2],
-        iconAnchor:[radius,radius],
-      });
-
-      const m = L.marker([area.lat,area.lng],{icon:pulseIcon}).addTo(map);
-      m._areaData = area;
-
-      m.bindTooltip(`
-        <div dir="rtl" style="font-family:Poppins,sans-serif">
-          <strong>${area.area_name}</strong><br>
-          الاحتياجات: ${area.needs_count} | معلّق: ${area.pending_count}
-        </div>`,{direction:'top'});
-
-      m.on('click',()=>showInfoPanel(area));
-      allMarkers.push({marker:m, priority:area.priority});
-    });
-
-    // Fit bounds
-    if (data.length) {
-      const bounds = L.latLngBounds(data.map(d=>[d.lat,d.lng]));
-      map.fitBounds(bounds,{padding:[40,40]});
-    }
-
-    window._leafletMap = map;
-  } catch(e) {
-    // Demo fallback data when backend is offline
-    const demoData = [
-      {area_name:'منطقة الشمال', lat:30.06, lng:31.24, priority:'high',     needs_count:16, pending_count:8,  total_quantity:420, intensity:.7},
-      {area_name:'منطقة الجنوب', lat:29.97, lng:32.53, priority:'critical', needs_count:12, pending_count:10, total_quantity:310, intensity:.9},
-      {area_name:'منطقة الشرق',  lat:30.58, lng:32.26, priority:'medium',   needs_count:9,  pending_count:3,  total_quantity:180, intensity:.4},
-      {area_name:'منطقة الغرب',  lat:29.30, lng:30.85, priority:'high',     needs_count:10, pending_count:6,  total_quantity:260, intensity:.65},
-      {area_name:'منطقة الوسط',  lat:27.18, lng:31.19, priority:'medium',   needs_count:7,  pending_count:2,  total_quantity:140, intensity:.35},
-    ];
-    heatData = demoData;
-    document.getElementById('statAreas').textContent    = demoData.length;
-    document.getElementById('statNeeds').textContent    = demoData.reduce((s,d)=>s+d.needs_count,0);
-    document.getElementById('statCritical').textContent = demoData.filter(d=>d.priority==='critical').length;
-    document.getElementById('statPending').textContent  = demoData.reduce((s,d)=>s+d.pending_count,0);
-
-    const map = L.map('heat-map').setView([29.5,31.0],6);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap'}).addTo(map);
-    window._leafletMap = map;
-
-    demoData.forEach(area => {
-      const color = area.priority==='critical'?'#ef4444':area.priority==='high'?'#f97316':area.priority==='medium'?'#eab308':'#22c55e';
-      const radius = 14 + area.needs_count * 3;
-      const pulseIcon = L.divIcon({
-        className:'',
-        html:`<div style="width:${radius*2}px;height:${radius*2}px;border-radius:50%;background:${color}30;border:3px solid ${color};display:flex;align-items:center;justify-content:center;animation:ripple-map 2s infinite;"><div style="width:${radius}px;height:${radius}px;border-radius:50%;background:${color};opacity:.85"></div></div>`,
-        iconSize:[radius*2,radius*2], iconAnchor:[radius,radius],
-      });
-      const m = L.marker([area.lat,area.lng],{icon:pulseIcon}).addTo(map);
-      m._areaData = area;
-      m.bindTooltip(`<div dir="rtl"><strong>${area.area_name}</strong><br>الاحتياجات: ${area.needs_count} | معلّق: ${area.pending_count}</div>`,{direction:'top'});
-      m.on('click',()=>showInfoPanel(area));
-      allMarkers.push({marker:m, priority:area.priority});
-    });
-    const bounds = L.latLngBounds(demoData.map(d=>[d.lat,d.lng]));
-    map.fitBounds(bounds,{padding:[40,40]});
-  }
+  heatData = data;
+  setStats(data);
+  addMarkers(map, data);
 }
 
 function filterMap(priority, btn) {
